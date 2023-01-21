@@ -10,6 +10,13 @@
       ./hardware-configuration.nix
     ];
 
+  # system auto upgrade
+  system.autoUpgrade = {
+      enable = true;
+      dates = "daily";
+      allowReboot = true;
+  };
+
   # nix gc
   nix = {
     settings.auto-optimise-store = true;
@@ -148,25 +155,25 @@
   nixpkgs.config.allowUnfree = true;
 
   # gnome remove packages
-environment.gnome.excludePackages = (with pkgs; [
-  gnome-photos
-  gnome-tour
-  gnome-text-editor
-]) ++ (with pkgs.gnome; [
-  cheese # webcam tool
-  gnome-calendar
-  gnome-contacts
-  gnome-clocks
-  gnome-music
-  gnome-maps
-  epiphany # web browser
-  geary # email reader
-  evince # document viewer
-  gnome-characters
-  gnome-weather
-  simple-scan
-  totem # video player
-]);
+  environment.gnome.excludePackages = (with pkgs; [
+    gnome-photos
+    gnome-tour
+    gnome-text-editor
+  ]) ++ (with pkgs.gnome; [
+    cheese # webcam tool
+    gnome-calendar
+    gnome-contacts
+    gnome-clocks
+    gnome-music
+    gnome-maps
+    epiphany # web browser
+    geary # email reader
+    evince # document viewer
+    gnome-characters
+    gnome-weather
+    simple-scan
+    totem # video player
+  ]);
 
   # zsh
   programs = {
