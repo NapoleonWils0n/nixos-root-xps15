@@ -43,7 +43,7 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
   system.autoUpgrade = {
       enable = true;
       dates = "daily";
-      allowReboot = true;
+      allowReboot = false;
   };
 
   # nix gc
