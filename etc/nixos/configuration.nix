@@ -119,13 +119,13 @@
         bind-address-ipv4 = "0.0.0.0";
         blocklist-enabled = false;
         dht-enabled = true;
-        download-dir = "/var/lib/transmission/torrents/complete";
+        download-dir = "/var/lib/transmission/Downloads";
         download-queue-enabled = true;
         download-queue-size = 5;
         encryption = 1;
         idle-seeding-limit = 30;
         idle-seeding-limit-enabled = false;
-        incomplete-dir = "/var/lib/transmission/torrents/incomplete";
+        incomplete-dir = "/var/lib/transmission/.incomplete";
         incomplete-dir-enabled = true;
         message-level = 2;
         peer-id-ttl-hours = 6;
@@ -161,7 +161,7 @@
         speed-limit-up-enabled = true;
         start-added-torrents = true;
         trash-original-torrent-files = true;
-        watch-dir = "/var/lib/transmission/torrents/watch-dir";
+        watch-dir = "/var/lib/transmission/watch-dir";
         watch-dir-enabled = true;
         umask = 18;
         };
