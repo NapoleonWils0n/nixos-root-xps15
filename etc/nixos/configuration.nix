@@ -237,6 +237,9 @@
     ssh.startAgent = true;
   };
 
+  # zsh
+  environment.pathsToLink = [ "/share/zsh" ];
+
   # powermanagement
   powerManagement.enable = true;
 

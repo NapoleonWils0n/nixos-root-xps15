@@ -266,6 +266,9 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
     ssh.startAgent = true;
   };
 
+  # zsh
+  environment.pathsToLink = [ "/share/zsh" ];
+
   # powermanagement
   powerManagement.enable = true;
 
