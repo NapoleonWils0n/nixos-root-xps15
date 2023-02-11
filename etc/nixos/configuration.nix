@@ -257,24 +257,13 @@
       # allow user
       permit keepenv setenv { PATH } djwilcox
       
-      # mount and unmount drives 
-      permit nopass djwilcox cmd mount 
-      permit nopass djwilcox cmd umount 
-      
       # allow root to switch to our user
       permit nopass setenv { PATH } root as djwilcox
-      
-      # namespace command
-      permit nopass setenv { PATH } djwilcox cmd namespace
-      
-      # vpn split route
-      permit nopass djwilcox cmd vpn-netns
-      
-      # vpn route
-      permit nopass djwilcox cmd vpn-route
+
+      # nopass
+      permit nopass keepenv setenv { PATH } djwilcox
 
       # nixos-rebuild switch
-      #permit nopass djwilcox cmd nixos-rebuild
       permit nopass keepenv setenv { PATH } djwilcox cmd nixos-rebuild
       
       # root as root
