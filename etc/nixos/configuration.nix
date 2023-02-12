@@ -258,7 +258,7 @@
       permit keepenv setenv { PATH } djwilcox
       
       # allow root to switch to our user
-      permit nopass setenv { PATH } root as djwilcox
+      permit nopass keepenv setenv { PATH } root as djwilcox
 
       # nopass
       permit nopass keepenv setenv { PATH } djwilcox
