@@ -168,6 +168,8 @@
       };
   };
 
+  # disable the transmission systemd service
+  systemd.services.transmission.wantedBy = pkgs.lib.mkForce [ ];
 
   # opengl
   hardware = {
