@@ -226,7 +226,6 @@
     gnome-maps
     epiphany # web browser
     geary # email reader
-    evince # document viewer
     gnome-characters
     gnome-weather
     simple-scan

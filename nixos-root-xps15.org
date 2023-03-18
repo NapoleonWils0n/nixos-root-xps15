@@ -255,7 +255,6 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
     gnome-maps
     epiphany # web browser
     geary # email reader
-    evince # document viewer
     gnome-characters
     gnome-weather
     simple-scan
