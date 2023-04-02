@@ -53,6 +53,10 @@
   users.extraUsers.djwilcox.extraGroups = [ "libvirtd" ];
   virtualisation = {
     libvirtd = {
+    allowedBridges = [
+      "nm-bridge"
+      "virbr0"
+    ];
       enable = true;
       qemu = {
         swtpm.enable = true;

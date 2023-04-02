@@ -82,6 +82,10 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
   users.extraUsers.djwilcox.extraGroups = [ "libvirtd" ];
   virtualisation = {
     libvirtd = {
+    allowedBridges = [
+      "nm-bridge"
+      "virbr0"
+    ];
       enable = true;
       qemu = {
         swtpm.enable = true;
