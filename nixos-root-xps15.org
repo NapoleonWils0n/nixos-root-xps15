@@ -84,7 +84,7 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
     libvirtd = {
       enable = true;
       qemu = {
-        runAsRoot = false;
+        runAsRoot = true;
         swtpm.enable = true;
         ovmf.enable = true;
         ovmf.packages = [ pkgs.OVMFFull.fd ];
