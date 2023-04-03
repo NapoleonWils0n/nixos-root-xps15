@@ -54,7 +54,6 @@
   virtualisation = {
     libvirtd = {
       enable = true;
-      allowedBridges = [ "virbr0" ];
       qemu = {
         swtpm.enable = true;
         ovmf.enable = true;
@@ -77,7 +76,6 @@
   networking = {
     hostName = "pollux"; # Define your hostname
     networkmanager.enable = true;
-    bridges.br0.interfaces = [ "enp0s20f0u2u3" ];
     firewall = {
       enable = true;
       allowedTCPPorts = [ 6881 ];
