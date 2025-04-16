@@ -42,6 +42,7 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.tmp.cleanOnBoot = true;
 
   # zfs
   systemd.services.zfs-mount.enable = false;
@@ -271,7 +272,7 @@ security.doas = {
 + root dir
 
 #+NAME: configuration.nix-root-dir
-#+BEGIN_SRC nix :noweb yes :tangle "/sudo::/etc/nixos/configuration.nix"
+#+BEGIN_SRC nix :noweb yes :tangle "/doas::/etc/nixos/configuration.nix"
 <<configuration.nix>>
 #+END_SRC
   
@@ -359,7 +360,7 @@ security.doas = {
 + root dir
 
 #+NAME: hardware-configuration.nix-root-dir
-#+BEGIN_SRC nix :noweb yes :tangle "/sudo::/etc/nixos/hardware-configuration.nix"
+#+BEGIN_SRC nix :noweb yes :tangle "/doas::/etc/nixos/hardware-configuration.nix"
 <<hardware-configuration.nix>>
 #+END_SRC
   
