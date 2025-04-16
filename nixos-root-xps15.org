@@ -28,16 +28,35 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
 #+NAME: configuration.nix
 #+BEGIN_SRC nix
 # Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# your system. Help is available in the configuration.nix(5) man page, on
+# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
+
+  # Use the systemd-boot EFI boot loader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  # zfs
+  systemd.services.zfs-mount.enable = false;
+  networking.hostId = "ad26d962";
+
+  # console keymap
+  console.keyMap = "us";
+  nixpkgs.config.allowUnfree = true;
+
+  # networking
+  networking.hostName = "pollux"; # Define your hostname.
+  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+
+  # Set your time zone.
+  time.timeZone = "Europe/London";
 
   # system auto upgrade
   system.autoUpgrade = {
@@ -46,7 +65,7 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
       allowReboot = false;
   };
 
-  # nix gc
+  # nix garbage collection
   nix = {
     settings.auto-optimise-store = true;
     gc = {
@@ -55,67 +74,6 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
       options = "--delete-older-than 7d";
     };
   };
-
-
-  # Bootloader.
-  boot = {
-  loader = {
-    systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
-    efi.efiSysMountPoint = "/boot/efi";
-    };
-    cleanTmpDir = true;
-    # Setup keyfile
-    initrd = {
-    secrets = {
-      "/crypto_keyfile.bin" = null;
-      };
-    # Enable swap on luks
-    luks.devices = {
-      "luks-ecd62e1d-1656-4125-86b2-020a95413523".device = "/dev/disk/by-uuid/ecd62e1d-1656-4125-86b2-020a95413523";
-      "luks-ecd62e1d-1656-4125-86b2-020a95413523".keyFile = "/crypto_keyfile.bin";
-      };
-    };
-  };
-
-  # libvirt
-  users.extraUsers.djwilcox.extraGroups = [ "libvirtd" ];
-  virtualisation = {
-    libvirtd = {
-      enable = true;
-      qemu = {
-        runAsRoot = true;
-        swtpm.enable = true;
-        ovmf.enable = true;
-        ovmf.packages = [ pkgs.OVMFFull.fd ];
-      };
-    };
-    spiceUSBRedirection.enable = true;
-  };
-  services.spice-vdagentd.enable = true;
-
-  # for mac
-  boot.extraModprobeConfig = ''
-    options kvm_intel nested=1
-    options kvm_intel emulate_invalid_guest_state=0
-    options kvm ignore_msrs=1
-  '';
-
-
-  # networking
-  networking = {
-    hostName = "pollux"; # Define your hostname
-    networkmanager.enable = true;
-    firewall = {
-      enable = true;
-      allowedTCPPorts = [ 6881 ];
-      allowedUDPPorts = [ 6882 ];
-    };
-  };
-
-
-  # Set your time zone.
-  time.timeZone = "Europe/London";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_GB.UTF-8";
@@ -132,144 +90,117 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
     LC_TIME = "en_GB.UTF-8";
   };
 
-
-  # services
-  services = {
-    xserver = {
-    # Enable the X11 windowing system.
+  # Enable the X11 windowing system.
+  services = { 
+    xserver = { 
     enable = true;
-    layout = "gb";
-    xkbVariant = "mac";
 
-    # nvidia 
     videoDrivers = [ "nvidia" ];
 
-    # exclude xterm
-    excludePackages = [ pkgs.xterm ];
-
-    # Enable the GNOME Desktop Environment.
+    # gnome
     displayManager.gdm.enable = true;
     desktopManager.gnome.enable = true;
+    
+    # xkb
+    xkb = {
+      layout = "gb";
+      variant = "mac";
+      };
     };
-    # gnome
-    gnome = {
-      tracker-miners.enable = false;
-    };
-    # disable cups printing
-    printing.enable = false;
-    # avahi
-    avahi.enable = true;
-    # thermals
+
+    zfs.autoScrub.enable = true;
+    fwupd.enable = true;
     thermald.enable = true;
     openssh.enable = true;
-    transmission = {
+    printing.enable = false;
+    libinput.enable = true;
+
+    pipewire = {
       enable = true;
-      credentialsFile = "/var/lib/secrets/transmission/settings.json";
-      home = "/var/lib/transmission";
-      settings = {
-        alt-speed-enabled = false;
-        bind-address-ipv4 = "0.0.0.0";
-        blocklist-enabled = false;
-        dht-enabled = true;
-        download-dir = "/var/lib/transmission/Downloads";
-        download-queue-enabled = true;
-        download-queue-size = 5;
-        encryption = 1;
-        idle-seeding-limit = 30;
-        idle-seeding-limit-enabled = false;
-        incomplete-dir = "/var/lib/transmission/.incomplete";
-        incomplete-dir-enabled = true;
-        message-level = 2;
-        peer-id-ttl-hours = 6;
-        peer-limit-global = 200;
-        peer-limit-per-torrent = 50;
-        peer-port = 6881;
-        peer-port-random-high = 65535;
-        peer-port-random-low = 49152;
-        peer-port-random-on-start = false;
-        peer-socket-tos = "default";
-        pex-enabled = true;
-        port-forwarding-enabled = false;
-        preallocation = 1;
-        prefetch-enabled = true;
-        queue-stalled-enabled = true;
-        queue-stalled-minutes = 30;
-        ratio-limit = 0;
-        ratio-limit-enabled = true;
-        rename-partial-files = true;
-        rpc-authentication-required = true;
-        rpc-bind-address = "0.0.0.0";
-        rpc-enabled = true;
-        rpc-host-whitelist-enabled = true;
-        rpc-port = 9091;
-        rpc-url = "/transmission/";
-        rpc-whitelist = "127.0.0.1,::1";
-        scrape-paused-torrents-enabled = true;
-        seed-queue-enabled = false;
-        seed-queue-size = 10;
-        speed-limit-down = 100;
-        speed-limit-down-enabled = false;
-        speed-limit-up = 100;
-        speed-limit-up-enabled = true;
-        start-added-torrents = true;
-        trash-original-torrent-files = true;
-        watch-dir = "/var/lib/transmission/watch-dir";
-        watch-dir-enabled = true;
-        umask = 18;
-        };
-      };
-  };
+      pulse.enable = true;
+   };
 
-  # disable the transmission systemd service
-  systemd.services.transmission.wantedBy = pkgs.lib.mkForce [ ];
+    # gnome
+    gnome = {
+      localsearch.enable = false;
+    };
+};
 
-  # opengl
-  hardware = {
-  opengl = {
+
+hardware = {
+  nvidia.open = false;
+  graphics ={
     enable = true;
     extraPackages = with pkgs; [
       vaapiIntel
       vaapiVdpau
       libvdpau-va-gl
-      ];
-    };
-  };
-
-  # Configure console keymap
-  console.keyMap = "us";
-
-  # Enable sound with pipewire.
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
-
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.djwilcox = {
-    isNormalUser = true;
-    description = "Daniel J Wilcox";
-    extraGroups = [ "networkmanager" "wheel" "audio" "video" ];
-    packages = with pkgs; [
-    #  firefox
-    #  thunderbird
     ];
   };
+};
+  
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
+
+# users
+users.mutableUsers = true;
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+users.users.djwilcox = {
+    isNormalUser = true;
+    extraGroups = [ "wheel networkmanager audio video" ]; # Enable ‘sudo’ for the user.
+};
+
+
+programs = {
+  zsh = {
+    enable = true;
+    enableCompletion = true;
+    syntaxHighlighting.enable = true;
+  };
+  dconf.enable = true;
+  #ssh.startAgent = true;
+
+
+  mtr.enable = true;
+  gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true;
+  };
+};
+
+users.users.djwilcox.shell = pkgs.zsh;
+#enviroment.pathsToLink = [ "/share/zsh" ];
+#enviroment.shells = with pkgs; [ zsh ];
+
+security.sudo.enable = true;
+
+# doas
+security.doas = {
+  enable = true;
+  extraConfig = ''
+    # allow user
+    permit keepenv setenv { PATH } djwilcox
+    
+    # allow root to switch to our user
+    permit nopass keepenv setenv { PATH } root as djwilcox
+
+    # nopass
+    permit nopass keepenv setenv { PATH } djwilcox
+
+    # nixos-rebuild switch
+    permit nopass keepenv setenv { PATH } djwilcox cmd nixos-rebuild
+    
+    # root as root
+    permit nopass keepenv setenv { PATH } root as root
+  '';
+};
 
   # gnome remove packages
   environment.gnome.excludePackages = (with pkgs; [
     gnome-photos
     gnome-tour
     gnome-text-editor
-  ]) ++ (with pkgs.gnome; [
+  ]) ++ (with pkgs; [
     cheese # webcam tool
     gnome-calendar
     gnome-contacts
@@ -284,60 +215,52 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
     totem # video player
   ]);
 
-  # programs
-  programs = {
-    zsh = {
-      enable = true;
-      enableCompletion = true;
-      syntaxHighlighting.enable = true;
-      }; 
-    dconf.enable = true;
-    ssh.startAgent = true;
-  };
-
-  # zsh
-  users.users.djwilcox.shell = pkgs.zsh;
-  environment.pathsToLink = [ "/share/zsh" ];
-  environment.shells = with pkgs; [ zsh ];
-
-  # powermanagement
-  powerManagement.enable = true;
-
-  # doas
-  security.doas = {
-    enable = true;
-    extraConfig = ''
-      # allow user
-      permit keepenv setenv { PATH } djwilcox
-      
-      # allow root to switch to our user
-      permit nopass keepenv setenv { PATH } root as djwilcox
-
-      # nopass
-      permit nopass keepenv setenv { PATH } djwilcox
-
-      # nixos-rebuild switch
-      permit nopass keepenv setenv { PATH } djwilcox cmd nixos-rebuild
-      
-      # root as root
-      permit nopass keepenv setenv { PATH } root as root
-    '';
-  };
-
-
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
   environment.systemPackages = with pkgs; [
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   ];
 
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "22.11"; # Did you read the comment?
+  # List services that you want to enable:
+
+  # Enable the OpenSSH daemon.
+  # services.openssh.enable = true;
+
+  # Open ports in the firewall.
+  networking.firewall.allowedTCPPorts = [ 6881 ];
+  networking.firewall.allowedUDPPorts = [ 6882 ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
+
+  # Copy the NixOS configuration file and link it from the resulting system
+  # (/run/current-system/configuration.nix). This is useful in case you
+  # accidentally delete configuration.nix.
+  system.copySystemConfiguration = true;
+
+  # This option defines the first version of NixOS you have installed on this particular machine,
+  # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
+  #
+  # Most users should NEVER change this value after the initial install, for any reason,
+  # even if you've upgraded your system to a new NixOS release.
+  #
+  # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
+  # so changing it will NOT upgrade your system - see https://nixos.org/manual/nixos/stable/#sec-upgrading for how
+  # to actually do that.
+  #
+  # This value being lower than the current NixOS release does NOT mean your system is
+  # out of date, out of support, or vulnerable.
+  #
+  # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
+  # and migrated your data accordingly.
+  #
+  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
+  system.stateVersion = "24.11"; # Did you read the comment?
 
 }
+
 #+END_SRC
 
 *** configuration.nix tangle
@@ -357,7 +280,6 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
 #+NAME: configuration.nix-current-dir
 #+BEGIN_SRC nix :noweb yes :tangle "etc/nixos/configuration.nix"
 <<configuration.nix>>
-<<doas>>
 #+END_SRC
 
 ** hardware-configuration.nix
@@ -375,26 +297,45 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-label/root";
-      fsType = "ext4";
+    { device = "zpool/root";
+      fsType = "zfs";
+      options = [ "zfsutil" ];
     };
 
-  boot.initrd.luks.devices."luks-44c327be-c7aa-47da-aa02-05ebe4a2837c".device = "/dev/disk/by-uuid/44c327be-c7aa-47da-aa02-05ebe4a2837c";
+  fileSystems."/nix" =
+    { device = "zpool/nix";
+      fsType = "zfs";
+      options = [ "zfsutil" ];
+    };
 
-  fileSystems."/boot/efi" =
-    { device = "/dev/disk/by-label/EFI";
+  fileSystems."/var" =
+    { device = "zpool/var";
+      fsType = "zfs";
+      options = [ "zfsutil" ];
+    };
+
+  fileSystems."/home" =
+    { device = "zpool/home";
+      fsType = "zfs";
+      options = [ "zfsutil" ];
+    };
+
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-id/nvme-Micron_2300_NVMe_1024GB_________20342A09973B-part1";
       fsType = "vfat";
+      options = [ "fmask=0022" "dmask=0022" ];
     };
 
   swapDevices =
-    [ { device = "/dev/disk/by-label/swap"; }
-    ];
+    [ { device = "/dev/disk/by-id/nvme-Micron_2300_NVMe_1024GB_________20342A09973B-part2";
+        randomEncryption = true;
+    }];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
@@ -405,9 +346,9 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
   # networking.interfaces.wlp59s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
+
 #+END_SRC
 
 *** hardware-configuration.nix tangle
