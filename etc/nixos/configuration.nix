@@ -81,6 +81,17 @@
     };
 
     zfs.autoScrub.enable = true;
+    znapzend = {
+      enable = true;
+      autoCreation = true;
+      pure = true;
+        zetup."zpool/home" = {
+          recursive = true;
+          mbuffer.enable = true;
+          plan = "12:00,15:00,18:00,21:00,00:00=>3h,1m=>1d"; 
+      };
+   };
+
     fwupd.enable = true;
     thermald.enable = true;
     openssh.enable = true;
