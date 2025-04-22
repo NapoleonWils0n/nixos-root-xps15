@@ -114,12 +114,14 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-macb
       enable = true;
       autoCreation = true;
       pure = true;
-        zetup."zpool/home" = {
-          recursive = true;
-          mbuffer.enable = true;
-          plan = "12:00,15:00,18:00,21:00,00:00=>3h,1m=>1d"; 
+      zetup = {
+          "zpool/home" = {
+            recursive = true;
+            mbuffer.enable = true;
+            plan = "1h=>1h,1d=>1h,1w=>1d,1m=>1w"; # Take snapshots every hour
+          };
+        };
       };
-   };
 
     fwupd.enable = true;
     thermald.enable = true;
