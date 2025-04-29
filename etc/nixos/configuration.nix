@@ -62,6 +62,9 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
+  # nix flakes
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # Enable the X11 windowing system.
   services = { 
     xserver = { 
