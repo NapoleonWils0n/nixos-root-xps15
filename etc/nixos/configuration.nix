@@ -26,6 +26,7 @@
   # networking
   networking.hostName = "pollux"; # Define your hostname.
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.enableIPv6  = false; # disable ipv6
 
   # Set your time zone.
   time.timeZone = "Europe/London";
