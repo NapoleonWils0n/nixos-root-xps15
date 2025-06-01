@@ -127,6 +127,7 @@ hardware = {
       libvdpau-va-gl
     ];
   };
+  alsa.plugins = with pkgs.alsaPlugins; [ pulseaudio ];
 };
   
 
@@ -208,6 +209,7 @@ security.doas = {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    pulseaudio
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   ];
 
