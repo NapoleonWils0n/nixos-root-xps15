@@ -127,7 +127,6 @@ hardware = {
       libvdpau-va-gl
     ];
   };
-  alsa.plugins = with pkgs.alsaPlugins; [ pulseaudio ];
 };
   
 
