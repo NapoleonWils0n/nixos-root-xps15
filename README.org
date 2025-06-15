@@ -1,0 +1,17 @@
+#+STARTUP: showall
+* nixos root xps15 flake
+
+run nixos-rebuild switch with the flake option
+
+#+begin_src sh
+doas nixos-rebuild switch --flake '.#pollux'
+#+end_src
+
+update the flake, add it to the git repo and push
+
+#+begin_src sh
+nix flake update 
+git add .
+git commit -m "nixos flake"
+git push github master
+#+end_src
