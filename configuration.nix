@@ -30,12 +30,12 @@
   # Set your time zone.
   time.timeZone = "Europe/London";
 
-  # system auto upgrade
-  system.autoUpgrade = {
-      enable = true;
-      dates = "daily";
-      allowReboot = false;
-  };
+#  # system auto upgrade
+#  system.autoUpgrade = {
+#      enable = true;
+#      dates = "daily";
+#      allowReboot = false;
+#  };
 
   # nix garbage collection
   nix = {
@@ -72,10 +72,6 @@
 
     videoDrivers = [ "nvidia" ];
 
-    # gnome
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
-    
     # xkb
     xkb = {
       layout = "gb";
@@ -83,6 +79,10 @@
       };
     };
 
+    # gnome
+    displayManager.gdm.enable = true;
+    desktopManager.gnome.enable = true;
+    
     zfs.autoScrub.enable = true;
     znapzend = {
       enable = true;
@@ -228,7 +228,7 @@ security.doas = {
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
-  system.copySystemConfiguration = true;
+  #system.copySystemConfiguration = true;
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
