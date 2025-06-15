@@ -11,6 +11,7 @@
     # host name set to pollux
     nixosConfigurations.pollux = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux"; # Specify the system architecture
+      specialArgs = { inherit inputs; }; # Pass the 'inputs' attribute set to modules
       modules = [
         # Import your existing configuration files
        ./configuration.nix
