@@ -108,6 +108,7 @@
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
+      jack.enable = true;
    };
 
     # gnome
@@ -163,6 +164,18 @@ users.users.djwilcox.shell = pkgs.zsh;
 #enviroment.shells = with pkgs; [ zsh ];
 
 security.sudo.enable = true;
+
+# rtkit for audio
+security.rtkit.enable = true;
+
+# pam setting for audio
+security.pam.loginLimits = [
+  { domain = "@audio"; item = "memlock"; type = "-"; value = "unlimited"; }
+  { domain = "@audio"; item = "rtprio"; type = "-"; value = "99"; }
+  { domain = "@audio"; item = "nofile"; type = "soft"; value = "99999"; }
+  { domain = "@audio"; item = "nofile"; type = "hard"; value = "99999"; }
+];
+
 
 # doas
 security.doas = {
