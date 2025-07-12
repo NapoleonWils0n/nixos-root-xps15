@@ -144,6 +144,12 @@ users.users.djwilcox = {
 
 
 programs = {
+  # dwl
+  dwl = {
+    enable = true;
+    # Crucially, tell the module to use YOUR customized dwl package
+    package = pkgs.dwl;
+  };
   zsh = {
     enable = true;
     enableCompletion = true;
@@ -224,8 +230,8 @@ security.doas = {
 environment.systemPackages = with pkgs; [
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
 
-  dwl # dwl
-  dwlb # Assuming dwlb is a separate package you need
+  #dwl # dwl
+  # dwlb # Assuming dwlb is a separate package you need
   tofi
   wlrctl
   wlr-which-key
