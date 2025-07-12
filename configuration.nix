@@ -230,8 +230,8 @@ security.doas = {
 environment.systemPackages = with pkgs; [
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
 
-  #dwl # dwl
-  # dwlb # Assuming dwlb is a separate package you need
+  #dwl
+  dwlb 
   tofi
   wlrctl
   wlr-which-key
