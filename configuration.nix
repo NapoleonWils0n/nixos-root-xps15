@@ -21,7 +21,8 @@
 
   # console keymap
   console.keyMap = "us";
-  nixpkgs.config.allowUnfree = true;
+  # unfree set in flake.nix
+  # nixpkgs.config.allowUnfree = true;
 
   # networking
   networking.hostName = "pollux"; # Define your hostname.
@@ -223,20 +224,40 @@ security.doas = {
 environment.systemPackages = with pkgs; [
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
 
-
   dwl # dwl
   dwlb # Assuming dwlb is a separate package you need
+  tofi
+  wlrctl
+  wlr-which-key
 
-  (writeText "dwl.desktop" ''
-  [Desktop Entry]
-  Name=dwl
-  Comment=Dynamic Wayland Window Manager
-  Exec=dbus-launch --exit-with-session dwl -s 'dwlb -font "monospace:size=16"'
-  Type=Application
-  Keywords=wayland;tiling;windowmanager;
-  DesktopNames=dwl
-  NoDisplay=false
-'')
+ # Corrected way to install the dwl.desktop file
+ (stdenv.mkDerivation {
+   pname = "dwl-desktop-entry";
+   version = "1.0";
+
+   # The actual desktop file content
+   desktopFile = writeText "dwl.desktop" ''
+     [Desktop Entry]
+     Name=dwl
+     Comment=Dynamic Wayland Window Manager
+     Exec=dbus-launch --exit-with-session dwl -s 'dwlb -font "monospace:size=16"'
+     Type=Application
+     Keywords=wayland;tiling;windowmanager;
+     DesktopNames=dwl
+     NoDisplay=false
+   '';
+
+   # Crucial: Tell stdenv to skip unnecessary phases
+   dontUnpack = true;
+   dontBuild = true;
+   dontConfigure = true;
+
+   # This phase tells Nix to copy the desktopFile to the correct location
+   installPhase = ''
+     mkdir -p $out/share/xsessions
+     cp $desktopFile $out/share/xsessions/dwl.desktop
+   '';
+ })
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
