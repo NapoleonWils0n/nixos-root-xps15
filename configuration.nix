@@ -21,8 +21,7 @@
 
   # console keymap
   console.keyMap = "us";
-  # unfree set in flake.nix
-  # nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = true;
 
   # networking
   networking.hostName = "pollux"; # Define your hostname.
@@ -147,9 +146,27 @@ programs = {
   # dwl
   dwl = {
     enable = true;
-    # Crucially, tell the module to use YOUR customized dwl package
-    package = pkgs.dwl;
+    # Use the 'package' option to provide your customized dwl
+    package = (pkgs.dwl.override {
+      # Path to your config.h relative to this configuration.nix file
+      configH = ./dwl/config.h;
+    }).overrideAttrs (oldAttrs: {
+      # Add your movestack.patch
+      # builtins.readFile is perfect for including the raw content of a patch file
+      patches = (oldAttrs.patches or []) ++ [
+        ./dwl/movestack.patch # <-- Direct path to the patch file
+      ];
+      # The example also showed adding buildInputs, which might be necessary
+      # if your dwl build requires specific libraries not pulled by default.
+      # For example, for bar rendering:
+      # buildInputs = oldAttrs.buildInputs or [] ++ [
+      #   pkgs.libdrm
+      #   pkgs.fcft
+      # ];
+      # Only add these if you encounter build errors related to missing libraries.
+    });
   };
+
   zsh = {
     enable = true;
     enableCompletion = true;

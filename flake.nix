@@ -1,3 +1,4 @@
+# your-flake-root/flake.nix
 {
   description = "NixOS configuration for Dell XPS 15 2019";
 
@@ -8,29 +9,14 @@
 
   outputs = { self, nixpkgs,... }@inputs: {
     # Define a NixOS system configuration
-    # host name set to pollux
+    # host name set to pollux, change the hostname for your system
     nixosConfigurations.pollux = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux"; # This is where the system architecture is defined
-
-      # Pass the 'inputs' attribute set to modules
-      specialArgs = { inherit inputs; };
-
+      system = "x86_64-linux"; # Specify the system architecture
+      specialArgs = { inherit inputs; }; # Pass the 'inputs' attribute set to modules
       modules = [
         # Import your existing configuration files
         ./configuration.nix
       ];
-
-      # Define the 'pkgs' set, correctly passing the 'system' and now 'config'
-      pkgs = import nixpkgs {
-        system = "x86_64-linux";
-        config = { # Pass nixpkgs.config options here
-          allowUnfree = true;
-        };
-        overlays = [
-          (import ./overlays/dwl-custom.nix) # Import the custom dwl overlay
-          # Add any other system-level overlays here
-        ];
-      };
     };
   };
 }
