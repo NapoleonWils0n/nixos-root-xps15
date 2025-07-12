@@ -16,6 +16,12 @@
         # Import your existing configuration files
        ./configuration.nix
       ];
+
+      # Add system-wide overlays here
+      overlays = [
+        (import ./overlays/dwl-custom.nix) # Import the custom dwl overlay
+        # Add any other system-level overlays here
+      ];
     };
   };
 }

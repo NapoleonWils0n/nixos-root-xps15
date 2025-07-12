@@ -220,9 +220,24 @@ security.doas = {
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  ];
+environment.systemPackages = with pkgs; [
+  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+
+
+  dwl # dwl
+  dwlb # Assuming dwlb is a separate package you need
+
+  (writeText "dwl.desktop" ''
+  [Desktop Entry]
+  Name=dwl
+  Comment=Dynamic Wayland Window Manager
+  Exec=dbus-launch --exit-with-session dwl -s 'dwlb -font "monospace:size=16"'
+  Type=Application
+  Keywords=wayland;tiling;windowmanager;
+  DesktopNames=dwl
+  NoDisplay=false
+'')
+];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
