@@ -246,7 +246,7 @@ environment.systemPackages = with pkgs; [
      [Desktop Entry]
      Name=dwl
      Comment=Dynamic Wayland Window Manager
-     Exec=dbus-launch --exit-with-session dwl -s 'dwlb -font "monospace:size=16"'
+     Exec=dbus-launch --exit-with-session dwl -s '${pkgs.dwlb}/bin/dwlb -font "monospace:size=16"'
      Type=Application
      Keywords=wayland;tiling;windowmanager;
      DesktopNames=dwl
