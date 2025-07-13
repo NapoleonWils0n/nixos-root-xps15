@@ -253,9 +253,10 @@ security.doas = {
 
   #dwl
   dwlb 
-  tofi
-  wlrctl
-  wlr-which-key
+  xdg-desktop-portal-wlr
+  #tofi
+  #wlrctl
+  #wlr-which-key
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
