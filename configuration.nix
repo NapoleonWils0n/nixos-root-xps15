@@ -19,10 +19,10 @@ let
 
   # 2. Create a wrapper script that launches dwl with dwlb as the status bar
   dwlWithDwlbWrapper = pkgs.writeScriptBin "dwl-with-dwlb" ''
-    #!/bin/sh
-    # Execute your customized dwl, passing the status bar command and any arguments received
-    exec ${lib.getExe myCustomDwlPackage} -s "${pkgs.dwlb}/bin/dwlb -font \"monospace:size=16\"" "$@"
-  '';
+      #!/bin/sh
+      # Execute dbus-run-session, which then launches your customized dwl with its arguments
+      exec ${pkgs.dbus}/bin/dbus-run-session ${lib.getExe myCustomDwlPackage} -s "${pkgs.dwlb}/bin/dwlb -font \"monospace:size=16\"" "$@"
+    '';
 in
 
 {
