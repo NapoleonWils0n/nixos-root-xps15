@@ -13,7 +13,7 @@ C-u C-c C-v t
 ** tangle from the command line
 
 #+begin_src sh
-emacs --batch -l org --eval '(org-babel-tangle-file "~/git/ubuntu-dotfiles/ubuntu-dotfiles.org")'
+emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-xps15")'
 #+end_src
 
 * flake update
