@@ -4,6 +4,27 @@
 
 { config, lib, pkgs, ... }:
 
+let
+  # 1. Define your customized dwl package
+  myCustomDwlPackage = (pkgs.dwl.override {
+    configH = ./dwl/config.h;
+  }).overrideAttrs (oldAttrs: {
+    patches = (oldAttrs.patches or []) ++ [
+      ./dwl/movestack.patch # Using the direct path for the patch
+    ];
+    # Add any necessary buildInputs if your config.h or patches require them
+    # For a bar, you might need fcft for font rendering.
+    buildInputs = oldAttrs.buildInputs or [] ++ [ pkgs.libdrm pkgs.fcft ];
+  });
+
+  # 2. Create a wrapper script that launches dwl with dwlb as the status bar
+  dwlWithDwlbWrapper = pkgs.writeScriptBin "dwl-with-dwlb" ''
+    #!/bin/sh
+    # Execute your customized dwl, passing the status bar command and any arguments received
+    exec ${lib.getExe myCustomDwlPackage} -s "${pkgs.dwlb}/bin/dwlb -font \"monospace:size=16\"" "$@"
+  '';
+in
+
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -141,30 +162,12 @@ users.users.djwilcox = {
     extraGroups = [ "wheel networkmanager audio video" ]; # Enable ‘sudo’ for the user.
 };
 
-
 programs = {
   # dwl
   dwl = {
     enable = true;
-    # Use the 'package' option to provide your customized dwl
-    package = (pkgs.dwl.override {
-      # Path to your config.h relative to this configuration.nix file
-      configH = ./dwl/config.h;
-    }).overrideAttrs (oldAttrs: {
-      # Add your movestack.patch
-      # builtins.readFile is perfect for including the raw content of a patch file
-      patches = (oldAttrs.patches or []) ++ [
-        ./dwl/movestack.patch # <-- Direct path to the patch file
-      ];
-      # The example also showed adding buildInputs, which might be necessary
-      # if your dwl build requires specific libraries not pulled by default.
-      # For example, for bar rendering:
-      # buildInputs = oldAttrs.buildInputs or [] ++ [
-      #   pkgs.libdrm
-      #   pkgs.fcft
-      # ];
-      # Only add these if you encounter build errors related to missing libraries.
-    });
+    # Tell the dwl module to use our wrapper script as the dwl executable
+    package = dwlWithDwlbWrapper;
   };
 
   zsh = {
@@ -243,8 +246,9 @@ security.doas = {
   ]);
 
   # List packages installed in system profile. To search, run:
-  # $ nix search wget
-environment.systemPackages = with pkgs; [
+  # The programs.dwl module creates its own dwl.desktop,
+  # which will now correctly launch our wrapper script.
+  environment.systemPackages = with pkgs; lib.filter (p: ! (lib.hasAttr "providedSessions" p && p.providedSessions == [ "dwl" ])) [
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
 
   #dwl
@@ -252,35 +256,6 @@ environment.systemPackages = with pkgs; [
   tofi
   wlrctl
   wlr-which-key
-
- # Corrected way to install the dwl.desktop file
- (stdenv.mkDerivation {
-   pname = "dwl-desktop-entry";
-   version = "1.0";
-
-   # The actual desktop file content
-   desktopFile = writeText "dwl.desktop" ''
-     [Desktop Entry]
-     Name=dwl
-     Comment=Dynamic Wayland Window Manager
-     Exec=dbus-launch --exit-with-session dwl -s '${pkgs.dwlb}/bin/dwlb -font "monospace:size=16"'
-     Type=Application
-     Keywords=wayland;tiling;windowmanager;
-     DesktopNames=dwl
-     NoDisplay=false
-   '';
-
-   # Crucial: Tell stdenv to skip unnecessary phases
-   dontUnpack = true;
-   dontBuild = true;
-   dontConfigure = true;
-
-   # This phase tells Nix to copy the desktopFile to the correct location
-   installPhase = ''
-     mkdir -p $out/share/xsessions
-     cp $desktopFile $out/share/xsessions/dwl.desktop
-   '';
- })
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
