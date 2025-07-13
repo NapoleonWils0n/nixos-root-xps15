@@ -124,9 +124,9 @@ static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TA
 /* commands */
 static const char *termcmd[] = { "alacritty", NULL };
 static const char *menucmd[] = { "tofi-drun", NULL };
-static const char *volumeup[]      = { "wpctl",   "set-volume @DEFAULT_AUDIO_SINK@ 5%+",  NULL };
-static const char *volumedown[]    = { "wpctl",   "set-volume @DEFAULT_AUDIO_SINK@ 5%-",  NULL };
-static const char *mutevolume[]    = { "wpctl",   "set-mute @DEFAULT_AUDIO_SINK@ toggle",        NULL };
+static const char *volumeup[]      = { "wpctl",   "set-volume", "@DEFAULT_AUDIO_SINK@", "5%+",  NULL };
+static const char *volumedown[]    = { "wpctl",   "set-volume",  "@DEFAULT_AUDIO_SINK@", "5%-",  NULL };
+static const char *mutevolume[]    = { "wpctl",   "set-mute",  "@DEFAULT_AUDIO_SINK@",  "toggle",  NULL };
 static const char *cursorleft[]    = { "wlrctl",   "pointer",  "move", "-1920",     NULL };
 static const char *cursorright[]    = { "wlrctl",   "pointer", "move", "1920",        NULL };
 static const char *wlrwhichkey[]    = { "wlr-which-key",  NULL };
