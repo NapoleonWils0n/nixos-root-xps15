@@ -86,6 +86,13 @@ in
   # nix flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  # --- XDG Desktop Portal Configuration for Wayland ---
+  xdg.portal = {
+    enable = true;
+    xdgOpenUsePortal = true; # Recommended for better portal integration
+    wlr.enable = true;       # This is the crucial part for wlroots compositors
+  };
+
   # Enable the X11 windowing system.
   services = { 
     xserver = { 
@@ -254,9 +261,6 @@ security.doas = {
   #dwl
   dwlb 
   xdg-desktop-portal-wlr
-  #tofi
-  #wlrctl
-  #wlr-which-key
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
