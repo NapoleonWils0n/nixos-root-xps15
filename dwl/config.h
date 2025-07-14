@@ -127,8 +127,8 @@ static const char *menucmd[] = { "tofi-drun", NULL };
 static const char *volumeup[]      = { "wpctl",   "set-volume", "@DEFAULT_AUDIO_SINK@", "5%+",  NULL };
 static const char *volumedown[]    = { "wpctl",   "set-volume",  "@DEFAULT_AUDIO_SINK@", "5%-",  NULL };
 static const char *mutevolume[]    = { "wpctl",   "set-mute",  "@DEFAULT_AUDIO_SINK@",  "toggle",  NULL };
-static const char *cursorleft[]    = { "warp-cursor",   "-i",  "left",     NULL };
-static const char *cursorright[]    = { "warp-cursor",   "-i", "right",        NULL };
+static const char *cursorleft[]    = { "/home/djwilcox/bin/warp-cursor",   "-i",  "left",     NULL };
+static const char *cursorright[]    = { "/home/djwilcox/bin/warp-cursor",   "-i", "right",        NULL };
 static const char *wlrwhichkey[]    = { "wlr-which-key",  NULL };
 
 static const Key keys[] = {
