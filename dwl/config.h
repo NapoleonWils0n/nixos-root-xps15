@@ -134,8 +134,8 @@ static const char *cursorright[]    = { "wlrctl",   "pointer", "move", "1920",  
 */
 
 /* move and click */
-static const char *cursorleft[]  = { "sh", "-c", "wlrctl pointer move -1920 && wlrctl pointer click 1", NULL };
-static const char *cursorright[] = { "sh", "-c", "wlrctl pointer move 1920 && wlrctl pointer click 1", NULL };
+static const char *cursorleft[]  = { "sh", "-c", "wlrctl pointer move -1920 && wlrctl pointer click", NULL };
+static const char *cursorright[] = { "sh", "-c", "wlrctl pointer move 1920 && wlrctl pointer click", NULL };
 static const char *wlrwhichkey[]    = { "wlr-which-key",  NULL };
 
 static const Key keys[] = {
