@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon July 17 18:25 2025
+From: Daniel J Wilcox <danieljwilcox@gmail.com>
+Date: Mon, 14 Jul 2025 17:50:00 +0100
+Subject: [PATCH] Fix wpctl sloppy focus behavior
+
+---
+ dwl.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/dwl.c b/dwl.c
+index 0000000..0000000 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -620,6 +620,11 @@
+ 		/* Change focus if the button was _pressed_ over a client */
+ 		xytonode(cursor->x, cursor->y, NULL, &c, NULL, NULL, NULL);
+ 		if (c && (!client_is_unmanaged(c) || client_wants_focus(c)))
++		{
++			// Check if the client is different from the currently focused one
++			// and then call focusclient for sloppy focus.
++			if (seat->keyboard_state.focused_surface != client_surface(c)) {
++				focusclient(c, 0); // Re-introduce the sloppy focus behavior
++			}
+ 			focusclient(c, 1);
+ 
+ 		keyboard = wlr_seat_get_keyboard(seat);
+-- 
+2.42.0
+
+
