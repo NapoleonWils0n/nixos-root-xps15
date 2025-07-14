@@ -127,8 +127,15 @@ static const char *menucmd[] = { "tofi-drun", NULL };
 static const char *volumeup[]      = { "wpctl",   "set-volume", "@DEFAULT_AUDIO_SINK@", "5%+",  NULL };
 static const char *volumedown[]    = { "wpctl",   "set-volume",  "@DEFAULT_AUDIO_SINK@", "5%-",  NULL };
 static const char *mutevolume[]    = { "wpctl",   "set-mute",  "@DEFAULT_AUDIO_SINK@",  "toggle",  NULL };
+
+/*
 static const char *cursorleft[]    = { "wlrctl",   "pointer",  "move", "-1920",     NULL };
 static const char *cursorright[]    = { "wlrctl",   "pointer", "move", "1920",        NULL };
+*/
+
+/* move and click */
+static const char *cursorleft[]  = { "sh", "-c", "wlrctl pointer move -1920 && wlrctl pointer click 1", NULL };
+static const char *cursorright[] = { "sh", "-c", "wlrctl pointer move 1920 && wlrctl pointer click 1", NULL };
 static const char *wlrwhichkey[]    = { "wlr-which-key",  NULL };
 
 static const Key keys[] = {
