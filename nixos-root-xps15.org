@@ -74,6 +74,7 @@ let
   }).overrideAttrs (oldAttrs: {
     patches = (oldAttrs.patches or []) ++ [
       ./dwl/movestack.patch # Using the direct path for the patch
+      ./dwl/fix-wpctl-focus.patch # The new patch for wpctl focus
     ];
     # Add any necessary buildInputs if your config.h or patches require them
     # For a bar, you might need fcft for font rendering.
