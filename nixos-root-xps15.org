@@ -622,6 +622,8 @@ static const char *menucmd[] = { "tofi-drun", NULL };
 static const char *volumeup[]      = { "wpctl",   "set-volume", "@DEFAULT_AUDIO_SINK@", "5%+",  NULL };
 static const char *volumedown[]    = { "wpctl",   "set-volume",  "@DEFAULT_AUDIO_SINK@", "5%-",  NULL };
 static const char *mutevolume[]    = { "wpctl",   "set-mute",  "@DEFAULT_AUDIO_SINK@",  "toggle",  NULL };
+static const char *cursorleft[]    = { "warp-cursor",   "-i",  "left",     NULL };
+static const char *cursorright[]    = { "warp-cursor",   "-i", "right",        NULL };
 static const char *wlrwhichkey[]    = { "wlr-which-key",  NULL };
 
 static const Key keys[] = {
@@ -656,8 +658,8 @@ static const Key keys[] = {
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_parenright, tag,            {.ui = ~0} },
 	{ MODKEY|WLR_MODIFIER_CTRL,  XKB_KEY_comma,      focusmon,       {.i = WLR_DIRECTION_LEFT} },
 	{ MODKEY|WLR_MODIFIER_CTRL,  XKB_KEY_period,     focusmon,       {.i = WLR_DIRECTION_RIGHT} },
-	{ MODKEY,                    XKB_KEY_comma,      spawn,          SHCMD("warp-cursor -i left") },
-	{ MODKEY,                    XKB_KEY_period,     spawn,          SHCMD("warp-cursor -i right") },
+	{ MODKEY,                    XKB_KEY_comma,      spawn,          {.v = cursorleft} },
+	{ MODKEY,                    XKB_KEY_period,     spawn,          {.v = cursorright} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_less,       tagmon,         {.i = WLR_DIRECTION_LEFT} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_greater,    tagmon,         {.i = WLR_DIRECTION_RIGHT} },
 	TAGKEYS(          XKB_KEY_1, XKB_KEY_exclam,                     0),
