@@ -9,7 +9,7 @@
 +                if (c && (!client_is_unmanaged(c) || client_wants_focus(c)))
 +                		{
 +                			if (sloppyfocus) {
-+                				if (c != selmon->sel) {
++				                if (c != selmon->sellt) { // Corrected from selmon->sel to selmon->sellt
 +                					focusclient(c, 0);
 +                				}
 +                			} else {
