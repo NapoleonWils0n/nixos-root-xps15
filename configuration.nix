@@ -13,56 +13,17 @@ let
       ./dwl/movestack.patch # Using the direct path for the patch
     ];
     # Add any necessary buildInputs if your config.h or patches require them
+    # For a bar, you might need fcft for font rendering.
     buildInputs = oldAttrs.buildInputs or [] ++ [ pkgs.libdrm pkgs.fcft ];
   });
-
-  # Define your status bar script wrapper
-  # This wrapper ensures the necessary system-level tools are in the PATH
-  # for the status-bar.sh script.
-  # wpctl is expected to be provided by Home Manager in the user's PATH.
-  myStatusBarScript = pkgs.writeScriptBin "status-bar-wrapper" ''
-    #!/bin/sh
-    # Set the PATH to include necessary Nix store paths for the status-bar.sh script.
-    export PATH="${pkgs.coreutils}/bin:\
-${pkgs.gawk}/bin:\
-${pkgs.bc}/bin:\
-${pkgs.util-linux}/bin:$PATH"
-
-    # Execute the actual status bar script from its source path.
-    # Ensure ./dwl/status-bar.sh is executable: chmod +x ./dwl/status-bar.sh
-    exec ${./dwl/status-bar.sh} "$@"
-  '';
 
   # 2. Create a wrapper script that launches dwl with dwlb as the status bar
   dwlWithDwlbWrapper = pkgs.writeScriptBin "dwl-with-dwlb" ''
       #!/bin/sh
-      # The command string passed to dwl's -s option is executed via 'sh -c'.
-      # This command now pipes the status-bar-wrapper output directly to dwlb's stdin.
-      # dwlb receives its custom text via -status-stdin and gets Wayland events from dwl.
-      exec ${lib.getExe myCustomDwlPackage} -s "sh -c \\"${myStatusBarScript}/bin/status-bar-wrapper\\" | \\"${pkgs.dwlb}/bin/dwlb\\" -font \\"monospace:size=16\\" -status-stdin all" "$@"
+      # launch your customized dwl with its arguments
+      exec ${lib.getExe myCustomDwlPackage} -s "${pkgs.dwlb}/bin/dwlb -font \"monospace:size=16\"" "$@"
     '';
 in
-
-#let
-#  # 1. Define your customized dwl package
-#  myCustomDwlPackage = (pkgs.dwl.override {
-#    configH = ./dwl/config.h;
-#  }).overrideAttrs (oldAttrs: {
-#    patches = (oldAttrs.patches or []) ++ [
-#      ./dwl/movestack.patch # Using the direct path for the patch
-#    ];
-#    # Add any necessary buildInputs if your config.h or patches require them
-#    # For a bar, you might need fcft for font rendering.
-#    buildInputs = oldAttrs.buildInputs or [] ++ [ pkgs.libdrm pkgs.fcft ];
-#  });
-#
-#  # 2. Create a wrapper script that launches dwl with dwlb as the status bar
-#  dwlWithDwlbWrapper = pkgs.writeScriptBin "dwl-with-dwlb" ''
-#      #!/bin/sh
-#      # launch your customized dwl with its arguments
-#      exec ${lib.getExe myCustomDwlPackage} -s "${pkgs.dwlb}/bin/dwlb -font \"monospace:size=16\"" "$@"
-#    '';
-#in
 
 {
   imports =
