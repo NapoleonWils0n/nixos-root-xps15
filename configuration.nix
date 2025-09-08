@@ -158,6 +158,45 @@ hardware = {
   };
 };
   
+# Enable common container config files in /etc/containers
+hardware.nvidia-container-toolkit.enable = true;
+
+# enable containers
+virtualisation.containers.enable = true;
+
+# containers registries
+virtualisation.containers.registries.search = [
+"docker.io"
+"quay.io"
+];
+
+virtualisation = {
+  podman = {
+    enable = true;
+
+    # Create a `docker` alias for podman, to use it as a drop-in replacement
+    dockerCompat = true;
+
+    # Required for containers under podman-compose to be able to talk to each other.
+    defaultNetwork.settings.dns_enabled = true;
+    autoPrune = {
+      enable = true;
+      dates = "weekly";
+      flag = [
+        "--filter=until=24h"
+        "--filter=label!=important"
+      ];
+    };
+  };
+};
+
+
+# podman zfs
+fileSystems."/var/lib/containers/storage" = {
+  device = "zpool/containers";
+  fsType = "zfs";
+  options = [ "zfsutil" ];
+};
 
 
 # users
@@ -166,7 +205,7 @@ users.mutableUsers = true;
   # Define a user account. Don't forget to set a password with ‘passwd’.
 users.users.djwilcox = {
     isNormalUser = true;
-    extraGroups = [ "wheel networkmanager audio video" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel networkmanager audio video oci" ]; # Enable ‘sudo’ for the user.
 };
 
 programs = {
