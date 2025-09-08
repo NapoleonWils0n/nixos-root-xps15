@@ -305,7 +305,7 @@ security.doas = {
   # services.openssh.enable = true;
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 6881 ];
+  networking.firewall.allowedTCPPorts = [ 6881 8080 ];
   networking.firewall.allowedUDPPorts = [ 6882 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
