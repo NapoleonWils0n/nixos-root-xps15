@@ -176,12 +176,6 @@ virtualisation = {
         runroot = "/run/containers/storage";
       };
     };
-   volumes = {
-     searxng_config = {
-       hostPath = ./searxng;
-       readOnly = true;
-     };
-   };
   };
   podman = {
     enable = true;
