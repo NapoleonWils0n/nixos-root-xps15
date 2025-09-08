@@ -224,16 +224,22 @@ hardware = {
 # Enable common container config files in /etc/containers
 hardware.nvidia-container-toolkit.enable = true;
 
-# enable containers
-virtualisation.containers.enable = true;
-
 # containers registries
-virtualisation.containers.registries.search = [
-"docker.io"
-"quay.io"
-];
-
 virtualisation = {
+  containers = {
+  enable = true;
+  registries.search = [
+  "docker.io"
+  "quay.io"
+  ];
+    storage.settings = {
+      storage = {
+        driver = "zfs";
+        graphroot = "/var/lib/containers/storage";
+        runroot = "/run/containers/storage";
+      };
+    };
+  };
   podman = {
     enable = true;
 
