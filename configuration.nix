@@ -292,6 +292,8 @@ security.doas = {
   #dwl
   dwlb 
   xdg-desktop-portal-wlr
+  # podman
+  podman-compose
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
