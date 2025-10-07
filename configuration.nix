@@ -316,7 +316,8 @@ security.doas = {
   # open-webui port 3000
   # invidious port 3000 8282
   # n8n port 5678
-  networking.firewall.allowedTCPPorts = [ 6881 8080 3000 8282 5678 ];
+  # crawl4ai 11235
+  networking.firewall.allowedTCPPorts = [ 6881 8080 3000 8282 5678 11235 ];
   networking.firewall.allowedUDPPorts = [ 6882 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
