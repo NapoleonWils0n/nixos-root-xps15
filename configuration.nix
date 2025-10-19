@@ -166,8 +166,8 @@ virtualisation = {
   containers = {
   enable = true;
   registries.search = [
-  "docker.io"
   "quay.io"
+  "docker.io"
   ];
     storage.settings = {
       storage = {
