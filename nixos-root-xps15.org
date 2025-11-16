@@ -1,22 +1,24 @@
 #+STARTUP: overview hideblocks
 #+OPTIONS: num:nil author:nil
 #+PROPERTY: header-args :mkdirp yes
-* tangle dotfiles
-** tangle document
+* nixos root
+** update
+*** tangle dotfiles
+**** tangle document
 
 C-c C-v t
 
-** tangle only one code block
+**** tangle only one code block
 
 C-u C-c C-v t
 
-** tangle from the command line
+**** tangle from the command line
 
 #+begin_src sh
 emacs --batch -l org --eval '(org-babel-tangle-file "~/git/nixos/nixos-root-xps15")'
 #+end_src
 
-* flake update
+*** flake update
 
 update the flake
 
@@ -55,7 +57,6 @@ git log --oneline flake.lock
 
 to find the exact commit hash
 
-* nixos root
 ** configuration.nix
 *** configuration.nix config
 
@@ -214,7 +215,7 @@ hardware = {
   graphics ={
     enable = true;
     extraPackages = with pkgs; [
-      vaapiIntel
+      intel-vaapi-driver
       vaapiVdpau
       libvdpau-va-gl
     ];
