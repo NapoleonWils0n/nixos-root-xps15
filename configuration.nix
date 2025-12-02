@@ -118,8 +118,6 @@ in
     # Enable the COSMIC desktop environment
     desktopManager.cosmic.enable = true;
 
-    environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
-    
     zfs.autoScrub.enable = true;
     znapzend = {
       enable = true;
@@ -154,6 +152,9 @@ in
     #};
 };
 
+
+  # comsic clipboard
+  environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
 
 hardware = {
   nvidia.open = false;
