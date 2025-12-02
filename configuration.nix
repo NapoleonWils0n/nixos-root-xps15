@@ -156,11 +156,6 @@ in
   # comsic clipboard
   environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
 
-  # cosmic exclude applications
-  environment.cosmic.excludePackages = with pkgs; [
-    cosmic-notifications
-  ];
-
 hardware = {
   nvidia.open = false;
   graphics ={
