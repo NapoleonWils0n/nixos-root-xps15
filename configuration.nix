@@ -118,7 +118,7 @@ in
     # Enable the COSMIC desktop environment
     desktopManager.cosmic.enable = true;
 
-    enviroment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
+    environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
     
     zfs.autoScrub.enable = true;
     znapzend = {
