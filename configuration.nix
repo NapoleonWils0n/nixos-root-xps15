@@ -95,7 +95,7 @@ in
 
   # Enable the X11 windowing system.
   services = { 
-    system76-scheduler.enable = true;
+    system76-scheduler.enable = true; # cosmic scheduler
     xserver = { 
     enable = true;
 
@@ -107,10 +107,6 @@ in
       variant = "mac";
       };
     };
-
-    # gnome
-    #displayManager.gdm.enable = true;
-    #desktopManager.gnome.enable = true;
 
     # Enable the COSMIC login manager
     displayManager.cosmic-greeter.enable = true;
@@ -145,11 +141,6 @@ in
       pulse.enable = true;
       jack.enable = true;
    };
-
-    # gnome
-    #gnome = {
-    #  localsearch.enable = false;
-    #};
 };
 
 
@@ -279,25 +270,6 @@ security.doas = {
   '';
 };
 
-  # gnome remove packages
-#  environment.gnome.excludePackages = (with pkgs; [
-#    gnome-photos
-#    gnome-tour
-#    gnome-text-editor
-#  ]) ++ (with pkgs; [
-#    cheese # webcam tool
-#    gnome-calendar
-#    gnome-contacts
-#    gnome-clocks
-#    gnome-music
-#    gnome-maps
-#    epiphany # web browser
-#    geary # email reader
-#    gnome-characters
-#    gnome-weather
-#    simple-scan
-#    totem # video player
-#  ]);
 
   # List packages installed in system profile. To search, run:
   # The programs.dwl module creates its own dwl.desktop,
