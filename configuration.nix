@@ -96,6 +96,7 @@ in
   # Enable the X11 windowing system.
   services = { 
     system76-scheduler.enable = true; # cosmic scheduler
+    spice-vdagentd.enable = true;      # Guest agent for SPICE (copy/paste, etc.)
     xserver = { 
     enable = true;
 
@@ -187,6 +188,21 @@ virtualisation = {
     # Required for containers under podman-compose to be able to talk to each other.
     defaultNetwork.settings.dns_enabled = true;
     };
+
+   # New Libvirtd settings for Windows 11
+    libvirtd = {
+      enable = true;
+      qemu = {
+        package = pkgs.qemu_kvm;
+        runAsRoot = true;
+        swtpm.enable = true; # Required for Windows 11 TPM
+        ovmf = {
+          enable = true;
+          packages = [ pkgs.OVMFFull.fd ]; # Required for Windows 11 Secure Boot
+        };
+      };
+    };
+    spiceUSBRedirection.enable = true;
 };
 
 
@@ -204,7 +220,7 @@ users.mutableUsers = true;
   # Define a user account. Don't forget to set a password with ‘passwd’.
 users.users.djwilcox = {
     isNormalUser = true;
-    extraGroups = [ "wheel networkmanager audio video oci" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "networkmanager" "audio" "video" "oci" "libvirtd" ]; # Enable ‘sudo’ for the user.
 };
 
 programs = {
