@@ -260,6 +260,7 @@ virtualisation = {
         package = pkgs.qemu_kvm;
         runAsRoot = true;
         swtpm.enable = true; # Required for Windows 11 TPM
+        vhostUserPackages = [ pkgs.virtiofsd ];
       };
     };
     spiceUSBRedirection.enable = true;
