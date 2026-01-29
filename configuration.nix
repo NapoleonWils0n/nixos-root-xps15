@@ -202,6 +202,12 @@ virtualisation = {
     spiceUSBRedirection.enable = true;
 };
 
+# libvirt zfs mount
+fileSystems."/home/djwilcox/libvirt" = {
+  device = "zpool/home/libvirt";
+  fsType = "zfs";
+  options = [ "zfsutil" ];
+};
 
 # podman zfs
 fileSystems."/var/lib/containers/storage" = {
