@@ -197,10 +197,19 @@ virtualisation = {
         runAsRoot = true;
         swtpm.enable = true; # Required for Windows 11 TPM
         vhostUserPackages = [ pkgs.virtiofsd ];
+        ovmf.enable = true; # mac osx
+        ovmf.packages = [ pkgs.OVMFFull.fd ];
       };
     };
     spiceUSBRedirection.enable = true;
 };
+
+# for mac
+boot.extraModprobeConfig = ''
+  options kvm_intel nested=1
+  options kvm_intel emulate_invalid_guest_state=0
+  options kvm ignore_msrs=1
+'';
 
 # libvirt zfs mount
 fileSystems."/home/djwilcox/libvirt" = {
