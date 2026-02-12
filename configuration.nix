@@ -197,8 +197,6 @@ virtualisation = {
         runAsRoot = true;
         swtpm.enable = true; # Required for Windows 11 TPM
         vhostUserPackages = [ pkgs.virtiofsd ];
-        ovmf.enable = true; # mac osx
-        ovmf.packages = [ pkgs.OVMFFull.fd ];
       };
     };
     spiceUSBRedirection.enable = true;
