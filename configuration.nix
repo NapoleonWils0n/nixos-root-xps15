@@ -331,6 +331,7 @@ security.doas = {
   gst_all_1.gst-plugins-bad
   gst_all_1.gst-plugins-ugly
   gst_all_1.gst-libav
+  dnsmasq
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
