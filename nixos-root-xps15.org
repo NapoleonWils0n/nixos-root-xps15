@@ -100,6 +100,15 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
   boot.tmp.cleanOnBoot = true;
 
+
+  # v4l2loopback
+  boot.extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
+  boot.kernelModules = [ "v4l2loopback" ];
+  boot.extraModprobeConfig = ''
+    options v4l2loopback devices=1 video_nr=10 card_label="iPad-AirPlay" exclusive_caps=1
+  '';
+
+
   # zfs
   systemd.services.zfs-mount.enable = false;
   networking.hostId = "ad26d962";
@@ -159,6 +168,16 @@ in
 
   # Enable the X11 windowing system.
   services = { 
+    usbmuxd.enable = true; # for ios
+    # avahi for airplay
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+      publish = {
+        enable = true;
+        userServices = true;
+      };
+    };
     system76-scheduler.enable = true; # cosmic scheduler
     spice-vdagentd.enable = true;      # Guest agent for SPICE (copy/paste, etc.)
     xserver = { 
@@ -372,6 +391,10 @@ security.doas = {
   xdg-desktop-portal-wlr
   # podman
   podman-compose
+  # for ios
+  libimobiledevice 
+  ifuse
+  uxplay
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -389,8 +412,10 @@ security.doas = {
   # invidious port 3000 8282
   # n8n port 5678
   # crawl4ai 11235
-  networking.firewall.allowedTCPPorts = [ 6881 8080 3000 8282 5678 11235 ];
-  networking.firewall.allowedUDPPorts = [ 6882 ];
+  # for ios airplay - allowedTCPPorts = [ 7000 7001 7100 ];
+  # for ios airplay - allowedUDPPorts = [ 5353 6000 6001 7011 ];
+  networking.firewall.allowedTCPPorts = [ 6881 8080 3000 7000 7001 7100 8282 5678 11235 ];
+  networking.firewall.allowedUDPPorts = [ 5353 6000 6001 6882 7011 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
