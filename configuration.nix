@@ -327,6 +327,10 @@ security.doas = {
   libimobiledevice 
   ifuse
   uxplay
+  gst_all_1.gst-plugins-good
+  gst_all_1.gst-plugins-bad
+  gst_all_1.gst-plugins-ugly
+  gst_all_1.gst-libav
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
