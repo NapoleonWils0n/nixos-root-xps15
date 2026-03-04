@@ -414,8 +414,8 @@ security.doas = {
   networking.firewall.allowedUDPPorts = [ 5353 6000 6001 6882 7011 ];
 
   # Add these ranges for the actual video/audio data streams
-  allowedTCPPortRanges = [ { from = 32768; to = 61000; } ];
-  allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
+  networking.firewall.allowedTCPPortRanges = [ { from = 32768; to = 61000; } ];
+  networking.firewall.allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
