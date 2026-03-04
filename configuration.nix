@@ -348,6 +348,10 @@ security.doas = {
   # for ios airplay - allowedUDPPorts = [ 5353 6000 6001 7011 ];
   networking.firewall.allowedTCPPorts = [ 6881 8080 3000 7000 7001 7100 8282 5678 11235 ];
   networking.firewall.allowedUDPPorts = [ 5353 6000 6001 6882 7011 ];
+
+  # Add these ranges for the actual video/audio data streams
+  allowedTCPPortRanges = [ { from = 32768; to = 61000; } ];
+  allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
