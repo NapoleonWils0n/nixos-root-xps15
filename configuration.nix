@@ -95,7 +95,6 @@ in
 
   # Enable the X11 windowing system.
   services = { 
-    dnsmasq.enable = true;
     usbmuxd.enable = true; # for ios
     # avahi for airplay
     avahi = {
