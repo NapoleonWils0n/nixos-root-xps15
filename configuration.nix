@@ -86,6 +86,9 @@ in
   # nix flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  # dbus
+  services.dbus.packages = [ pkgs.xdg-desktop-portal-cosmic ];
+
   # --- XDG Desktop Portal Configuration for Wayland ---
   xdg.portal = {
     enable = true;
