@@ -331,6 +331,7 @@ security.doas = {
   #dwl
   dwlb 
   xdg-desktop-portal-wlr
+  xdg-desktop-portal-cosmic
   # podman
   podman-compose
   # for ios
