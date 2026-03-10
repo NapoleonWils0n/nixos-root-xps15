@@ -100,11 +100,11 @@ in
       # Default for all sessions
       common.default = [ "gtk" ];
       
-      # Specific override for your dwl session
-      dwl.default = [ "wlr" "gtk" ];
-  
       # Specific override for your COSMIC session
-      cosmic.default = [ "cosmic" "gtk" ];
+      cosmic.default = [ "cosmic" ];
+
+      # Specific override for your dwl session
+      dwl.default = [ "wlr" ];
     };
   };
 
