@@ -153,8 +153,23 @@ in
   # --- XDG Desktop Portal Configuration for Wayland ---
   xdg.portal = {
     enable = true;
-    xdgOpenUsePortal = true; # Recommended for better portal integration
-    wlr.enable = true;       # This is the crucial part for wlroots compositors
+    # This replaces the old 'wlr.enable = true' logic with a more robust version
+    extraPortals = [ 
+      pkgs.xdg-desktop-portal-wlr 
+      pkgs.xdg-desktop-portal-cosmic
+      pkgs.xdg-desktop-portal-gtk
+    ];
+  
+    config = {
+      # Default for all sessions
+      common.default = [ "gtk" ];
+      
+      # Specific override for your dwl session
+      dwl.default = [ "wlr" "gtk" ];
+  
+      # Specific override for your COSMIC session
+      cosmic.default = [ "cosmic" "gtk" ];
+    };
   };
 
   # Enable the X11 windowing system.
