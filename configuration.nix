@@ -1,8 +1,20 @@
+#===============================================================================
 # Edit this configuration file to define what should be installed on
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
+#===============================================================================
+
+
+#===============================================================================
+# config, lib, pkgs
+#===============================================================================
 
 { config, lib, pkgs, ... }:
+
+
+#===============================================================================
+# dwl
+#===============================================================================
 
 let
   # 1. Define your customized dwl package
@@ -26,52 +38,97 @@ let
 in
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.tmp.cleanOnBoot = true;
 
-  # zfs
-  systemd.services.zfs-mount.enable = false;
-  networking.hostId = "ad26d962";
+#===============================================================================
+# import - hardware-configuration.nix
+#===============================================================================
 
-  # console keymap
-  console.keyMap = "us";
-  nixpkgs.config.allowUnfree = true;
+imports =
+  [
+    ./hardware-configuration.nix
+  ];
 
-  # networking
-  networking.hostName = "pollux"; # Define your hostname.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
-  # Set your time zone.
-  time.timeZone = "Europe/London";
+#===============================================================================
+# boot
+#===============================================================================
 
-#  # system auto upgrade
-#  system.autoUpgrade = {
-#      enable = true;
-#      dates = "daily";
-#      allowReboot = false;
-#  };
+boot = {
+  # clean tmp on boot
+  tmp.cleanOnBoot = true;
 
-  # nix garbage collection
-  nix = {
-    settings.auto-optimise-store = true;
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
-    };
+  # extraModprobeConfig for mac vm
+  extraModprobeConfig = ''
+    options kvm_intel nested=1
+    options kvm_intel emulate_invalid_guest_state=0
+    options kvm ignore_msrs=1
+  '';
+
+  # use the systemd-boot EFI boot loader.
+  loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+  };
+};
+
+
+#===============================================================================
+# nix 
+#===============================================================================
+
+nix = {
+  settings = {
+    # auto-optimise-store
+    auto-optimise-store = true;
+    # flakes
+    experimental-features = [ "nix-command" "flakes" ];
   };
 
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_GB.UTF-8";
+  # nix garbage collection
+  gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
+};
 
-  i18n.extraLocaleSettings = {
+
+#===============================================================================
+# nixpkgs
+#===============================================================================
+
+nixpkgs.config.allowUnfree = true;
+
+
+#===============================================================================
+# console keymap
+#===============================================================================
+
+console.keyMap = "us";
+
+
+#===============================================================================
+# time zone
+#===============================================================================
+
+time.timeZone = "Europe/London";
+
+
+#===============================================================================
+# environment.sessionVariables - comsic clipboard
+#===============================================================================
+
+environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
+
+
+#===============================================================================
+# Select internationalisation properties.
+#===============================================================================
+
+i18n = {
+  defaultLocale = "en_GB.UTF-8";
+  extraLocaleSettings = {
     LC_ADDRESS = "en_GB.UTF-8";
     LC_IDENTIFICATION = "en_GB.UTF-8";
     LC_MEASUREMENT = "en_GB.UTF-8";
@@ -82,102 +139,32 @@ in
     LC_TELEPHONE = "en_GB.UTF-8";
     LC_TIME = "en_GB.UTF-8";
   };
-
-  # nix flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  # dbus
-  services.dbus.packages = [ pkgs.xdg-desktop-portal-cosmic ];
-
-  # --- XDG Desktop Portal Configuration for Wayland ---
-  xdg.portal = {
-    enable = true;
-    # This replaces the old 'wlr.enable = true' logic with a more robust version
-    extraPortals = [ 
-      pkgs.xdg-desktop-portal-wlr 
-      pkgs.xdg-desktop-portal-cosmic
-      pkgs.xdg-desktop-portal-gtk
-    ];
-  
-    config = {
-      # Default for all sessions
-      common.default = [ "gtk" ];
-      
-      # Specific override for your COSMIC session
-      cosmic.default = [ "cosmic" ];
-
-      # Specific override for your dwl session
-      dwl.default = [ "wlr" ];
-    };
-  };
-
-  # Enable the X11 windowing system.
-  services = { 
-    usbmuxd.enable = true; # for ios
-    # avahi for airplay
-    avahi = {
-      enable = true;
-      nssmdns4 = true;
-      publish = {
-        enable = true;
-        userServices = true;
-      };
-    };
-    system76-scheduler.enable = true; # cosmic scheduler
-    spice-vdagentd.enable = true;      # Guest agent for SPICE (copy/paste, etc.)
-    xserver = { 
-    enable = true;
-
-    videoDrivers = [ "nvidia" ];
-
-    # xkb
-    xkb = {
-      layout = "gb";
-      variant = "mac";
-      };
-    };
-
-    # Enable the COSMIC login manager
-    displayManager.cosmic-greeter.enable = true;
-  
-    # Enable the COSMIC desktop environment
-    desktopManager.cosmic.enable = true;
-
-    zfs.autoScrub.enable = true;
-    znapzend = {
-      enable = true;
-      autoCreation = true;
-      pure = true;
-      zetup = {
-          "zpool/home" = {
-            recursive = true;
-            mbuffer.enable = true;
-            plan = "1h=>1h,1d=>1h,1w=>1d,1m=>1w"; # Take snapshots every hour
-          };
-        };
-      };
-
-    fwupd.enable = true;
-    thermald.enable = true;
-    openssh.enable = true;
-    printing.enable = false;
-    libinput.enable = true;
-
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-      jack.enable = true;
-   };
 };
 
 
-  # comsic clipboard
-  environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
+#===============================================================================
+# users
+#===============================================================================
+
+users = {
+  mutableUsers = true; # mutable user set a password with ‘passwd’
+
+  # user
+  users.djwilcox = {
+    shell = pkgs.zsh; # shell
+    isNormalUser = true;
+    extraGroups = [ "wheel" "networkmanager" "audio" "video" "oci" "libvirtd" ];
+  };
+};
+
+
+#===============================================================================
+# hardware graphics
+#===============================================================================
 
 hardware = {
-  nvidia.open = false;
+  nvidia.open = false; # proprietary nvidia drivers
+  nvidia-container-toolkit.enable = true; # nvidia container toolkit
   graphics ={
     enable = true;
     extraPackages = with pkgs; [
@@ -187,14 +174,273 @@ hardware = {
     ];
   };
 };
-  
-# Enable common container config files in /etc/containers
-hardware.nvidia-container-toolkit.enable = true;
 
-# containers registries
+
+#===============================================================================
+# zfs mount
+#===============================================================================
+
+systemd.services.zfs-mount.enable = false;
+
+
+#===============================================================================
+# filesystems
+#===============================================================================
+
+# libvirt zfs mount
+fileSystems."/home/djwilcox/libvirt" = {
+  device = "zpool/home/libvirt";
+  fsType = "zfs";
+  options = [ "zfsutil" ];
+};
+
+
+# podman zfs
+fileSystems."/var/lib/containers/storage" = {
+  device = "zpool/containers";
+  fsType = "zfs";
+  options = [ "zfsutil" ];
+};
+
+
+#===============================================================================
+# services
+#===============================================================================
+
+services = { 
+   usbmuxd.enable = true; # for ios
+
+   # avahi for airplay
+   avahi = {
+     enable = true;
+     nssmdns4 = true;
+     publish = {
+       enable = true;
+       userServices = true;
+     };
+   };
+
+   dbus.packages = [ pkgs.xdg-desktop-portal-cosmic ]; # dbus
+   system76-scheduler.enable = true; # cosmic scheduler
+   spice-vdagentd.enable = true;      # Guest agent for SPICE (copy/paste, etc.)
+
+   # xserver
+   xserver = { 
+   enable = true;
+   videoDrivers = [ "nvidia" ];
+
+   # xkb
+   xkb = {
+     layout = "gb";
+     variant = "mac";
+     };
+   };
+
+   # Enable the COSMIC login manager
+   displayManager.cosmic-greeter.enable = true;
+ 
+   # Enable the COSMIC desktop environment
+   desktopManager.cosmic.enable = true;
+
+   # zfs auto scrub
+   zfs.autoScrub.enable = true;
+   znapzend = {
+     enable = true;
+     autoCreation = true;
+     pure = true;
+     zetup = {
+         "zpool/home" = {
+           recursive = true;
+           mbuffer.enable = true;
+           plan = "1h=>1h,1d=>1h,1w=>1d,1m=>1w"; # Take snapshots every hour
+         };
+       };
+     };
+
+   openssh.enable = true; # ssh
+   fwupd.enable = true;
+   thermald.enable = true;
+   printing.enable = false; # disable cups printing
+   libinput.enable = true;  # libinput - touchpad
+
+   # pipewire
+   pipewire = {
+     enable = true;
+     alsa.enable = true;
+     alsa.support32Bit = true;
+     pulse.enable = true;
+     jack.enable = true;
+  };
+};
+
+
+#===============================================================================
+# security 
+#===============================================================================
+
+security = {
+  sudo.enable = true;  # sudo
+  rtkit.enable = true; # rtkit for audio
+
+  # pam setting for audio
+  pam.loginLimits = [
+    { domain = "@audio"; item = "memlock"; type = "-"; value = "unlimited"; }
+    { domain = "@audio"; item = "rtprio"; type = "-"; value = "99"; }
+    { domain = "@audio"; item = "nofile"; type = "soft"; value = "99999"; }
+    { domain = "@audio"; item = "nofile"; type = "hard"; value = "99999"; }
+  ];
+
+  # doas
+  doas = {
+    enable = true;
+    extraConfig = ''
+      # allow user
+      permit keepenv setenv { PATH } djwilcox
+      
+      # allow root to switch to our user
+      permit nopass keepenv setenv { PATH } root as djwilcox
+  
+      # nopass
+      permit nopass keepenv setenv { PATH } djwilcox
+  
+      # nixos-rebuild switch
+      permit nopass keepenv setenv { PATH } djwilcox cmd nixos-rebuild
+      
+      # root as root
+      permit nopass keepenv setenv { PATH } root as root
+    '';
+  };
+};
+
+
+#===============================================================================
+# networking
+#===============================================================================
+
+networking = {
+  hostName = "pollux"; # Define your hostname.
+  hostId = "ad26d962"; # hostid
+  networkmanager.enable = true;  # network manager
+
+  # firewall
+  # Open ports in the firewall.
+  # transmission ports 6881 6882
+  # searxng port 8080
+  # open-webui port 3000
+  # invidious port 3000 8282
+  # n8n port 5678
+  # crawl4ai 11235
+  # for ios airplay - allowedTCPPorts = [ 7000 7001 7100 ];
+  # for ios airplay - allowedUDPPorts = [ 5353 6000 6001 7011 ];
+
+  firewall = {
+  # allowedTCPPorts
+  allowedTCPPorts = [ 6881 8080 3000 7000 7001 7100 8282 5678 11235 ];
+
+  # allowedUDPPorts
+  allowedUDPPorts = [ 5353 6000 6001 6882 7011 ];
+
+  # uxplay ports
+  allowedTCPPortRanges = [ { from = 32768; to = 61000; } ];
+  allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
+  };
+};
+
+
+#===============================================================================
+# XDG Desktop Portal Configuration for Wayland
+#===============================================================================
+
+xdg.portal = {
+  enable = true;
+
+  # This replaces the old 'wlr.enable = true' logic with a more robust version
+  extraPortals = [ 
+    pkgs.xdg-desktop-portal-wlr 
+    pkgs.xdg-desktop-portal-cosmic
+    pkgs.xdg-desktop-portal-gtk
+  ];
+
+  config = {
+    # Default for all sessions
+    common.default = [ "gtk" ];
+    
+    # Specific override for your COSMIC session
+    cosmic.default = [ "cosmic" ];
+
+    # Specific override for your dwl session
+    dwl.default = [ "wlr" ];
+  };
+};
+
+
+#===============================================================================
+# programs
+#===============================================================================
+
+programs = {
+  # dwl
+  dwl = {
+    enable = true;
+    # Tell the dwl module to use our wrapper script as the dwl executable
+    package = dwlWithDwlbWrapper;
+  };
+
+  # zsh shell
+  zsh = {
+    enable = true;
+    enableCompletion = true;
+    syntaxHighlighting.enable = true;
+  };
+
+  # dconf
+  dconf.enable = true;
+
+  # mtr
+  mtr.enable = true;
+
+  gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true;
+  };
+};
+
+
+#===============================================================================
+# systemPackages
+#===============================================================================
+
+  environment.systemPackages = with pkgs; lib.filter (p: ! (lib.hasAttr "providedSessions" p && p.providedSessions == [ "dwl" ])) [
+  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+
+  #dwl
+  dwlb 
+  xdg-desktop-portal-wlr
+  xdg-desktop-portal-cosmic
+
+  # podman
+  podman-compose
+
+  # for ios
+  libimobiledevice 
+  ifuse
+  uxplay
+  gst_all_1.gst-plugins-good
+  gst_all_1.gst-plugins-bad
+  gst_all_1.gst-plugins-ugly
+  gst_all_1.gst-libav
+];
+
+
+#===============================================================================
+# virtualisation
+#===============================================================================
+
 virtualisation = {
   containers = {
   enable = true;
+
+  # podman registries
   registries.search = [
   "docker.io"
   "quay.io"
@@ -207,17 +453,19 @@ virtualisation = {
       };
     };
   };
+
+  # podman
   podman = {
     enable = true;
 
-    # Create a `docker` alias for podman, to use it as a drop-in replacement
+    # Create a `docker` alias for podman
     dockerCompat = true;
 
     # Required for containers under podman-compose to be able to talk to each other.
     defaultNetwork.settings.dns_enabled = true;
     };
 
-   # New Libvirtd settings for Windows 11
+   # libvirt
     libvirtd = {
       enable = true;
       qemu = {
@@ -230,153 +478,10 @@ virtualisation = {
     spiceUSBRedirection.enable = true;
 };
 
-# for mac
-boot.extraModprobeConfig = ''
-  options kvm_intel nested=1
-  options kvm_intel emulate_invalid_guest_state=0
-  options kvm ignore_msrs=1
-'';
 
-# libvirt zfs mount
-fileSystems."/home/djwilcox/libvirt" = {
-  device = "zpool/home/libvirt";
-  fsType = "zfs";
-  options = [ "zfsutil" ];
-};
-
-# podman zfs
-fileSystems."/var/lib/containers/storage" = {
-  device = "zpool/containers";
-  fsType = "zfs";
-  options = [ "zfsutil" ];
-};
-
-
-# users
-users.mutableUsers = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-users.users.djwilcox = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "audio" "video" "oci" "libvirtd" ]; # Enable ‘sudo’ for the user.
-};
-
-programs = {
-  # dwl
-  dwl = {
-    enable = true;
-    # Tell the dwl module to use our wrapper script as the dwl executable
-    package = dwlWithDwlbWrapper;
-  };
-
-  zsh = {
-    enable = true;
-    enableCompletion = true;
-    syntaxHighlighting.enable = true;
-  };
-  dconf.enable = true;
-  #ssh.startAgent = true;
-
-
-  mtr.enable = true;
-  gnupg.agent = {
-    enable = true;
-    enableSSHSupport = true;
-  };
-};
-
-users.users.djwilcox.shell = pkgs.zsh;
-#enviroment.pathsToLink = [ "/share/zsh" ];
-#enviroment.shells = with pkgs; [ zsh ];
-
-security.sudo.enable = true;
-
-# rtkit for audio
-security.rtkit.enable = true;
-
-# pam setting for audio
-security.pam.loginLimits = [
-  { domain = "@audio"; item = "memlock"; type = "-"; value = "unlimited"; }
-  { domain = "@audio"; item = "rtprio"; type = "-"; value = "99"; }
-  { domain = "@audio"; item = "nofile"; type = "soft"; value = "99999"; }
-  { domain = "@audio"; item = "nofile"; type = "hard"; value = "99999"; }
-];
-
-
-# doas
-security.doas = {
-  enable = true;
-  extraConfig = ''
-    # allow user
-    permit keepenv setenv { PATH } djwilcox
-    
-    # allow root to switch to our user
-    permit nopass keepenv setenv { PATH } root as djwilcox
-
-    # nopass
-    permit nopass keepenv setenv { PATH } djwilcox
-
-    # nixos-rebuild switch
-    permit nopass keepenv setenv { PATH } djwilcox cmd nixos-rebuild
-    
-    # root as root
-    permit nopass keepenv setenv { PATH } root as root
-  '';
-};
-
-
-  # List packages installed in system profile. To search, run:
-  # The programs.dwl module creates its own dwl.desktop,
-  # which will now correctly launch our wrapper script.
-  environment.systemPackages = with pkgs; lib.filter (p: ! (lib.hasAttr "providedSessions" p && p.providedSessions == [ "dwl" ])) [
-  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-
-  #dwl
-  dwlb 
-  xdg-desktop-portal-wlr
-  xdg-desktop-portal-cosmic
-  # podman
-  podman-compose
-  # for ios
-  libimobiledevice 
-  ifuse
-  uxplay
-  gst_all_1.gst-plugins-good
-  gst_all_1.gst-plugins-bad
-  gst_all_1.gst-plugins-ugly
-  gst_all_1.gst-libav
-];
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # transmission ports 6881 6882
-  # searxng port 8080
-  # open-webui port 3000
-  # invidious port 3000 8282
-  # n8n port 5678
-  # crawl4ai 11235
-  # for ios airplay - allowedTCPPorts = [ 7000 7001 7100 ];
-  # for ios airplay - allowedUDPPorts = [ 5353 6000 6001 7011 ];
-  networking.firewall.allowedTCPPorts = [ 6881 8080 3000 7000 7001 7100 8282 5678 11235 ];
-  networking.firewall.allowedUDPPorts = [ 5353 6000 6001 6882 7011 ];
-
-  # Add these ranges for the actual video/audio data streams
-  networking.firewall.allowedTCPPortRanges = [ { from = 32768; to = 61000; } ];
-  networking.firewall.allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # Copy the NixOS configuration file and link it from the resulting system
-  # (/run/current-system/configuration.nix). This is useful in case you
-  # accidentally delete configuration.nix.
-  #system.copySystemConfiguration = true;
+#===============================================================================
+# system.stateVersion
+#===============================================================================
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
@@ -396,5 +501,4 @@ security.doas = {
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "25.05"; # Did you read the comment?
-
 }
