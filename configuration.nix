@@ -302,6 +302,7 @@ services = {
 
      settings = {
        server = {
+          do-not-query-localhost = false;
           interface = [ "127.0.0.1" ];
           port = 53;
           access-control = [ "127.0.0.0/8 allow" ];
@@ -311,7 +312,7 @@ services = {
        forward-zone = [
          {
            name = ".";
-           forward-addr = [ "127.0.0.1@5300" "9.9.9.9" ];
+           forward-addr = [ "127.0.0.1@5300" "8.8.8.8" ];
          }
        ];
      };
