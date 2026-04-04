@@ -271,6 +271,50 @@ services = {
      pulse.enable = true;
      jack.enable = true;
   };
+
+   # dnscrypt
+   dnscrypt-proxy2 = {
+     enable = true;
+     settings = {
+       require_dnssec = true;
+       require_nolog = true;
+       require_nofilter = true;
+       listen_addresses = [ "127.0.0.1:5300" ];
+
+       sources.public-resolvers = {
+       urls = [
+         "https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md"
+         "https://download.dnscrypt.info/resolvers-list/v3/public-resolvers.md"
+       ];
+       cache_file = "/var/cache/dnscrypt-proxy/public-resolvers.md";
+       minisign_key = "RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3";
+       };
+     };
+  };
+
+   # unbound
+   unbound = {
+     enable = true;
+
+     settings = {
+       server = {
+          interface = [ "127.0.0.1" ];
+          port = 53;
+          access-control = [ "127.0.0.0/8 allow" ];
+          module-config = ''"validator iterator"'';
+       };
+       # Forward all queries to dnscrypt-proxy
+       forward-zone = [
+         {
+           name = ".";
+           forward-addr = [ "127.0.0.1@5300" ];
+         }
+       ];
+     };
+   };
+
+  # Ensure services start in the correct order
+  systemd.services.unbound.wants = [ "dnscrypt-proxy2.service" ];
 };
 
 
@@ -318,6 +362,10 @@ security = {
 #===============================================================================
 
 networking = {
+  # dns
+  nameservers = [ "127.0.0.1" ];
+  networkmanager.dns = "none";
+
   hostName = "pollux"; # Define your hostname.
   hostId = "ad26d962"; # hostid
   networkmanager.enable = true;  # network manager
@@ -343,6 +391,9 @@ networking = {
   # uxplay ports
   allowedTCPPortRanges = [ { from = 32768; to = 61000; } ];
   allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
+
+  # Trust the default libvirt bridge
+  trustedInterfaces = [ "virbr0" ]; 
   };
 };
 
