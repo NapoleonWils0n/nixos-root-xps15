@@ -177,10 +177,14 @@ hardware = {
 
 
 #===============================================================================
-# zfs mount
+# systemd.services
 #===============================================================================
 
+# zfs mount
 systemd.services.zfs-mount.enable = false;
+
+# Ensure services start in the correct order
+systemd.services.unbound.wants = [ "dnscrypt-proxy2.service" ];
 
 
 #===============================================================================
@@ -273,7 +277,7 @@ services = {
   };
 
    # dnscrypt
-   dnscrypt-proxy2 = {
+   dnscrypt-proxy = {
      enable = true;
      settings = {
        require_dnssec = true;
@@ -312,9 +316,6 @@ services = {
        ];
      };
    };
-
-  # Ensure services start in the correct order
-  systemd.services.unbound.wants = [ "dnscrypt-proxy2.service" ];
 };
 
 
@@ -363,7 +364,7 @@ security = {
 
 networking = {
   # dns
-  nameservers = [ "127.0.0.1" ];
+  nameservers = [ "127.0.0.1" "9.9.9.9" ];
   networkmanager.dns = "none";
 
   hostName = "pollux"; # Define your hostname.
