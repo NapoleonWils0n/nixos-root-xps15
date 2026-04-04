@@ -180,11 +180,13 @@ hardware = {
 # systemd.services
 #===============================================================================
 
-# zfs mount
-systemd.services.zfs-mount.enable = false;
-
-# Ensure services start in the correct order
-systemd.services.unbound.wants = [ "dnscrypt-proxy2.service" ];
+systemd = {
+  services = {
+    zfs-mount.enable = false; # zfs mount
+    unbound.wants = [ "dnscrypt-proxy.service" ]; # unbound wants dnscrypt
+    unbound.after = [ "dnscrypt-proxy.service" ]; # unbound after dnscrypt
+  };
+};
 
 
 #===============================================================================
