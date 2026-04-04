@@ -312,7 +312,7 @@ services = {
        forward-zone = [
          {
            name = ".";
-           forward-addr = [ "127.0.0.1@5300" "8.8.8.8" ];
+           forward-addr = [ "127.0.0.1@5300" "9.9.9.9" "1.4.1.1" ];
          }
        ];
      };
