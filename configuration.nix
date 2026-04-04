@@ -311,7 +311,7 @@ services = {
        forward-zone = [
          {
            name = ".";
-           forward-addr = [ "127.0.0.1@5300" ];
+           forward-addr = [ "127.0.0.1@5300" "9.9.9.9" ];
          }
        ];
      };
@@ -364,7 +364,7 @@ security = {
 
 networking = {
   # dns
-  nameservers = [ "127.0.0.1" "9.9.9.9" ];
+  nameservers = [ "127.0.0.1" ];
   networkmanager.dns = "none";
 
   hostName = "pollux"; # Define your hostname.
