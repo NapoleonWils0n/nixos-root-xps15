@@ -58,9 +58,6 @@ boot = {
   # clean tmp on boot
   tmp.cleanOnBoot = true;
 
-  # dummy module for network
-  kernelModules = [ "dummy" ];
-
   # extraModprobeConfig for mac vm
   extraModprobeConfig = ''
     options kvm_intel nested=1
@@ -376,6 +373,21 @@ networking = {
   hostName = "pollux"; # Define your hostname.
   hostId = "ad26d962"; # hostid
   networkmanager.enable = true;  # network manager
+
+  # dummy network interface
+  networkmanager.ensureProfiles.profiles = {
+    dummy0 = {
+      connection = {
+        id = "dummy0";
+        type = "dummy";
+        interface-name = "dummy0";
+      };
+      ipv4 = {
+        address1 = "10.200.1.1/24";
+        method = "manual";
+      };
+    };
+  };
 
 
   # dummy network interface
