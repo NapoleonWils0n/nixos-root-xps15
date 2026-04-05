@@ -418,8 +418,8 @@ networking = {
   allowedTCPPortRanges = [ { from = 32768; to = 61000; } ];
   allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
 
-  # Trust the default libvirt bridge
-  trustedInterfaces = [ "virbr0" ]; 
+  # trust the virbr0 veth-host dummy0 interfaces 
+  trustedInterfaces = [ "virbr0" "veth-host" "dummy0" ]; 
   };
 };
 
