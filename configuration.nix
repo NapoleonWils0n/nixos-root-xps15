@@ -307,8 +307,6 @@ services = {
 
      settings = {
        server = {
-          # Ensure Unbound doesn't fail if the dummy module loads slightly late
-          freebind = true; 
           do-not-query-localhost = false;
           interface = [ "127.0.0.1" "10.200.1.1" ];
           port = 53;
