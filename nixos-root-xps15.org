@@ -404,9 +404,9 @@ services = {
      settings = {
        server = {
           do-not-query-localhost = false;
-          interface = [ "127.0.0.1" ];
+          interface = [ "127.0.0.1" "10.200.1.1" ];
           port = 53;
-          access-control = [ "127.0.0.0/8 allow" ];
+          access-control = [ "127.0.0.0/8 allow" "10.200.1.0/24 allow" ];
           module-config = ''"validator iterator"'';
        };
        # Forward all queries to dnscrypt-proxy
@@ -473,6 +473,28 @@ networking = {
   hostId = "ad26d962"; # hostid
   networkmanager.enable = true;  # network manager
 
+  # dummy network interface
+  networkmanager.ensureProfiles.profiles = {
+    dummy0 = {
+      connection = {
+        id = "dummy0";
+        type = "dummy";
+        interface-name = "dummy0";
+      };
+      ipv4 = {
+        address1 = "10.200.1.1/24";
+        method = "manual";
+      };
+    };
+  };
+
+
+  # dummy network interface
+  interfaces.dummy0 = {
+    ipv4.addresses = [ { address = "10.200.1.1"; prefixLength = 24; } ];
+  };
+
+
   # firewall
   # Open ports in the firewall.
   # transmission ports 6881 6882
@@ -495,8 +517,8 @@ networking = {
   allowedTCPPortRanges = [ { from = 32768; to = 61000; } ];
   allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
 
-  # Trust the default libvirt bridge
-  trustedInterfaces = [ "virbr0" ]; 
+  # trust the virbr0 veth-host dummy0 interfaces 
+  trustedInterfaces = [ "virbr0" "veth-host" "dummy0" ]; 
   };
 };
 
