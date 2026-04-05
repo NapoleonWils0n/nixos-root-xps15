@@ -379,6 +379,13 @@ networking = {
   hostId = "ad26d962"; # hostid
   networkmanager.enable = true;  # network manager
 
+
+  # dummy network interface
+  interfaces.dummy0 = {
+    ipv4.addresses = [ { address = "10.200.1.1"; prefixLength = 24; } ];
+  };
+
+
   # firewall
   # Open ports in the firewall.
   # transmission ports 6881 6882
@@ -400,11 +407,6 @@ networking = {
   # uxplay ports
   allowedTCPPortRanges = [ { from = 32768; to = 61000; } ];
   allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
-
-  # dummy network interface
-  interfaces.dummy0 = {
-    ipv4.addresses = [ { address = "10.200.1.1"; prefixLength = 24; } ];
-  };
 
   # Trust the default libvirt bridge
   trustedInterfaces = [ "virbr0" ]; 
