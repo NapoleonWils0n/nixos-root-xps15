@@ -58,6 +58,9 @@ boot = {
   # clean tmp on boot
   tmp.cleanOnBoot = true;
 
+  # dummy module for network
+  kernelModules = [ "dummy" ];
+
   # extraModprobeConfig for mac vm
   extraModprobeConfig = ''
     options kvm_intel nested=1
@@ -304,10 +307,12 @@ services = {
 
      settings = {
        server = {
+          # Ensure Unbound doesn't fail if the dummy module loads slightly late
+          freebind = true; 
           do-not-query-localhost = false;
-          interface = [ "127.0.0.1" ];
+          interface = [ "127.0.0.1" "10.200.1.1" ];
           port = 53;
-          access-control = [ "127.0.0.0/8 allow" ];
+          access-control = [ "127.0.0.0/8 allow" "10.200.1.0/24 allow" ];
           module-config = ''"validator iterator"'';
        };
        # Forward all queries to dnscrypt-proxy
@@ -395,6 +400,11 @@ networking = {
   # uxplay ports
   allowedTCPPortRanges = [ { from = 32768; to = 61000; } ];
   allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
+
+  # dummy network interface
+  interfaces.dummy0 = {
+    ipv4.addresses = [ { address = "10.200.1.1"; prefixLength = 24; } ];
+  };
 
   # Trust the default libvirt bridge
   trustedInterfaces = [ "virbr0" ]; 
