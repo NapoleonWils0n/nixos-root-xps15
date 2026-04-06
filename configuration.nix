@@ -70,6 +70,11 @@ boot = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
   };
+
+  # needed for virt-manager
+  kernel.sysctl = {
+    "net.ipv4.ip_forward" = 1;
+  };
 };
 
 
@@ -426,6 +431,13 @@ networking = {
     "tap0"
     "vnet0"
   ]; 
+
+  # needed for virt-manager
+  checkReversePath = false;
+  extraCommands = ''
+      iptables -A FORWARD -i virbr0 -j ACCEPT
+      iptables -A FORWARD -o virbr0 -j ACCEPT
+    '';
   };
 };
 
