@@ -518,7 +518,13 @@ networking = {
   allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
 
   # trust the virbr0 veth-host dummy0 interfaces 
-  trustedInterfaces = [ "virbr0" "veth-host" "dummy0" ]; 
+  trustedInterfaces = [
+    "virbr0"
+    "veth-host"
+    "dummy0"
+    "tap0"
+    "vnet0"
+  ]; 
   };
 };
 
