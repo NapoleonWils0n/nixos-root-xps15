@@ -33,6 +33,14 @@ let
   dwlWithDwlbWrapper = pkgs.writeScriptBin "dwl-with-dwlb" ''
       #!/bin/sh
 
+      # 1. Force variables for this session only
+      export WAYLAND_DISPLAY=wayland-0
+      export XDG_CURRENT_DESKTOP=dwl
+      
+      # 2. Sync to systemd/dbus immediately
+      ${pkgs.systemd}/bin/systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+      ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+
       # launch your customized dwl with its arguments
       exec ${lib.getExe myCustomDwlPackage} -s "${pkgs.dwlb}/bin/dwlb -font \"monospace:size=16\"" "$@"
     '';
