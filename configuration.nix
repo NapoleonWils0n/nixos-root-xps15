@@ -13,38 +13,10 @@
 
 
 #===============================================================================
-# dwl
-#===============================================================================
-
-let
-  # 1. Define your customized dwl package
-  myCustomDwlPackage = (pkgs.dwl.override {
-    configH = ./dwl/config.h;
-  }).overrideAttrs (oldAttrs: {
-    patches = (oldAttrs.patches or []) ++ [
-      ./dwl/movestack.patch # Using the direct path for the patch
-    ];
-    # Add any necessary buildInputs if your config.h or patches require them
-    # For a bar, you might need fcft for font rendering.
-    buildInputs = oldAttrs.buildInputs or [] ++ [ pkgs.libdrm pkgs.fcft ];
-  });
-
-  # 2. Create a wrapper script that launches dwl with dwlb as the status bar
-  dwlWithDwlbWrapper = pkgs.writeScriptBin "dwl-with-dwlb" ''
-      #!/bin/sh
-
-      # launch your customized dwl with its arguments
-      exec ${lib.getExe myCustomDwlPackage} -s "${pkgs.dwlb}/bin/dwlb -font \"monospace:size=16\"" "$@"
-    '';
-in
-
-{
-
-
-#===============================================================================
 # import - hardware-configuration.nix
 #===============================================================================
 
+{
 imports =
   [
     ./hardware-configuration.nix
@@ -450,9 +422,7 @@ networking = {
 xdg.portal = {
   enable = true;
 
-  # This replaces the old 'wlr.enable = true' logic with a more robust version
   extraPortals = [ 
-    pkgs.xdg-desktop-portal-wlr 
     pkgs.xdg-desktop-portal-cosmic
     pkgs.xdg-desktop-portal-gtk
   ];
@@ -463,9 +433,6 @@ xdg.portal = {
     
     # Specific override for your COSMIC session
     cosmic.default = [ "cosmic" ];
-
-    # Specific override for your dwl session
-    dwl.default = [ "wlr" ];
   };
 };
 
@@ -475,13 +442,6 @@ xdg.portal = {
 #===============================================================================
 
 programs = {
-  # dwl
-  dwl = {
-    enable = true;
-    # Tell the dwl module to use our wrapper script as the dwl executable
-    package = dwlWithDwlbWrapper;
-  };
-
   # zsh shell
   zsh = {
     enable = true;
@@ -506,12 +466,8 @@ programs = {
 # systemPackages
 #===============================================================================
 
-  environment.systemPackages = with pkgs; lib.filter (p: ! (lib.hasAttr "providedSessions" p && p.providedSessions == [ "dwl" ])) [
+environment.systemPackages = with pkgs; [
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-
-  #dwl
-  dwlb 
-  xdg-desktop-portal-wlr
   xdg-desktop-portal-cosmic
 
   # podman
