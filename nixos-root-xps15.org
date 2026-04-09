@@ -578,6 +578,13 @@ programs = {
     enable = true;
     # Tell the dwl module to use our wrapper script as the dwl executable
     package = dwlWithDwlbWrapper;
+
+    # This runs just before dwl starts, but after the environment is set up
+    extraSessionCommands = ''
+      # Export current Wayland variables to the systemd/dbus user session
+      # This allows Portals and Browsers to find the correct socket.
+      ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+    '';
   };
 
   # zsh shell
