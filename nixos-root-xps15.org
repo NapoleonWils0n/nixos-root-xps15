@@ -132,13 +132,6 @@ let
   dwlWithDwlbWrapper = pkgs.writeScriptBin "dwl-with-dwlb" ''
       #!/bin/sh
 
-      # This background process waits for dwl to start, then syncs the environment.
-      # This is what allows browsers to find the display and see the dark mode setting.
-      (
-        sleep 0.5
-        ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-      ) &
-
       # launch your customized dwl with its arguments
       exec ${lib.getExe myCustomDwlPackage} -s "${pkgs.dwlb}/bin/dwlb -font \"monospace:size=16\"" "$@"
     '';
