@@ -32,6 +32,14 @@ let
   # 2. Create a wrapper script that launches dwl with dwlb as the status bar
   dwlWithDwlbWrapper = pkgs.writeScriptBin "dwl-with-dwlb" ''
       #!/bin/sh
+
+      # This background process waits for dwl to start, then syncs the environment.
+      # This is what allows browsers to find the display and see the dark mode setting.
+      (
+        sleep 0.5
+        ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+      ) &
+
       # launch your customized dwl with its arguments
       exec ${lib.getExe myCustomDwlPackage} -s "${pkgs.dwlb}/bin/dwlb -font \"monospace:size=16\"" "$@"
     '';
@@ -479,13 +487,6 @@ programs = {
     enable = true;
     # Tell the dwl module to use our wrapper script as the dwl executable
     package = dwlWithDwlbWrapper;
-
-    # This runs just before dwl starts, but after the environment is set up
-    extraSessionCommands = ''
-      # Export current Wayland variables to the systemd/dbus user session
-      # This allows Portals and Browsers to find the correct socket.
-      ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-    '';
   };
 
   # zsh shell
