@@ -251,21 +251,24 @@ services = {
    # Enable the COSMIC login manager
    displayManager.cosmic-greeter.enable = true;
 
-  # ADD THIS HERE: Force the dwl session to use wayland-0
-  displayManager.sessionPackages = lib.mkForce [
-    (pkgs.writeTextFile {
-      name = "dwl-session";
-      destination = "/share/wayland-sessions/dwl.desktop";
-      text = ''
-        [Desktop Entry]
-        Name=dwl
-        Comment=Dynamic window manager for Wayland (Forced wayland-0)
-        Exec=env WAYLAND_DISPLAY=wayland-0 XDG_CURRENT_DESKTOP=dwl ${lib.getExe dwlWithDwlbWrapper}
-        Type=Application
-      '';
-    })
-  ];
- 
+   # dwl wayland-0
+   displayManager.sessionPackages = lib.mkForce [
+      (pkgs.writeTextFile {
+        name = "dwl-session";
+        destination = "/share/wayland-sessions/dwl.desktop";
+        text = ''
+          [Desktop Entry]
+          Name=dwl
+          Comment=Dynamic window manager for Wayland (Forced wayland-0)
+          Exec=env WAYLAND_DISPLAY=wayland-0 XDG_CURRENT_DESKTOP=dwl ${lib.getExe dwlWithDwlbWrapper}
+          Type=Application
+        '';
+      }).overrideAttrs (_: {
+        # This is the line that fixes your error
+        passthru.providedSessions = [ "dwl" ];
+      })
+    ];
+
    # Enable the COSMIC desktop environment
    desktopManager.cosmic.enable = true;
 
