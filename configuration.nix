@@ -194,16 +194,6 @@ fileSystems."/var/lib/containers/storage" = {
 services = { 
    usbmuxd.enable = true; # for ios
 
-   # avahi for airplay
-   avahi = {
-     enable = true;
-     nssmdns4 = true;
-     publish = {
-       enable = true;
-       userServices = true;
-     };
-   };
-
    dbus.packages = [ pkgs.xdg-desktop-portal-cosmic ]; # dbus
    system76-scheduler.enable = true; # cosmic scheduler
    spice-vdagentd.enable = true;      # Guest agent for SPICE (copy/paste, etc.)
@@ -378,23 +368,14 @@ networking = {
   # Open ports in the firewall.
   # transmission ports 6881 6882
   # searxng port 8080
-  # open-webui port 3000
   # invidious port 3000 8282
-  # n8n port 5678
-  # crawl4ai 11235
-  # for ios airplay - allowedTCPPorts = [ 7000 7001 7100 ];
-  # for ios airplay - allowedUDPPorts = [ 5353 6000 6001 7011 ];
 
   firewall = {
   # allowedTCPPorts
-  allowedTCPPorts = [ 6881 8080 3000 7000 7001 7100 8282 5678 11235 ];
+  allowedTCPPorts = [ 6881 8080 3000 8282 ];
 
   # allowedUDPPorts
-  allowedUDPPorts = [ 5353 6000 6001 6882 7011 ];
-
-  # uxplay ports
-  allowedTCPPortRanges = [ { from = 32768; to = 61000; } ];
-  allowedUDPPortRanges = [ { from = 32768; to = 61000; } ];
+  allowedUDPPorts = [ 6882 ];
 
   # trust the virbr0 veth-host dummy0 interfaces 
   trustedInterfaces = [
@@ -476,11 +457,6 @@ environment.systemPackages = with pkgs; [
   # for ios
   libimobiledevice 
   ifuse
-  uxplay
-  gst_all_1.gst-plugins-good
-  gst_all_1.gst-plugins-bad
-  gst_all_1.gst-plugins-ugly
-  gst_all_1.gst-libav
 ];
 
 
